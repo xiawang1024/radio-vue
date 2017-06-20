@@ -1,64 +1,306 @@
 <template>
   <div id="app">
+    <div class="g-logo">
+        <img src="./imgs/logo.png">
+    </div>
     <div class="g-sd">
       <div class="m-list">
-          <div class="list-name" @click="slideList()">
+          <div class="list-name" @click="slideList(0)">
               河南电台
               <i class="icon-down"></i>
           </div>
-          <ul class="list-box" v-show="showBtn">
-              <li class="list-item" v-for="n in 10">人民广播</li>
+          <ul class="list-box" v-show="showBtn[0]">
+              <li class="list-item" v-for="item of hnItemList" @click="isActive(item.cid)" :class="{isActive: cid == item.cid ? true : false}">{{item.name}}</li>
           </ul>
       </div>
       <div class="m-list">
-          <div class="list-name">
+          <div class="list-name" @click="slideList(1)">
               网络电台
               <i class="icon-down"></i>
           </div>
-          <ul class="list-box">
-              <li class="list-item">人民广播</li>
+          <ul class="list-box" v-show="showBtn[1]">
+              <li class="list-item" v-for="item of wlItemList" @click="isActive(item.cid)" :class="{isActive: cid == item.cid ? true : false}">{{item.name}}</li>
           </ul>
       </div>
       <div class="m-list">
-          <div class="list-name">
+          <div class="list-name" @click="slideList(2)">
               地市台
               <i class="icon-down"></i>
           </div>
-          <ul class="list-box">
-              <li class="list-item">人民广播</li>
+          <ul class="list-box" v-show="showBtn[2]">
+              <li class="list-item" v-for="item of dsItemList" @click="isActive(item.cid)" :class="{isActive: cid == item.cid ? true : false}">{{item.name}}</li>
           </ul>
       </div>
     </div>
     <div class="g-mn">
-      <div class="g-mnc">
-        <p>左侧顶宽</p>
+      <div class="g-mnc clearfix">
+        <div class="m-daylist">
+            <div class="m-datepick clearfix">
+                <div class="item"  @mouseenter="yearBtn = true" @mouseleave="yearBtn = false">
+                    <input class="ipt" type="text" readonly name="" value="2017年" v-model="year" ><span class="select"><i class="white icon-down"></i></span>
+                    <ul class="yearBox" v-show="yearBtn">
+                        <li v-for="item of years" @click="selectYear(item.id)">{{item.id}}年</li>
+                    </ul>
+                </div>
+                <div class="item" @mouseenter="monthBtn = true" @mouseleave="monthBtn = false">
+                    <input class="ipt" type="text" readonly name="" value="06月" v-model="month"><span class="select" ><i class="white icon-down"></i></span>
+                    <ul class="monthBox" v-show="monthBtn">
+                        <li v-for="n in 12" @click="selectMonth(n)">{{n < 10 ? '0' + n : n}}月</li>
+                    </ul>
+                </div>
+                <div class="item" @mouseenter="dayBtn = true" @mouseleave="dayBtn = false">
+                    <input class="ipt" type="text" readonly name="" value="02日" v-model="day"><span class="select" ><i class="white icon-down"></i></span>
+                    <ul class="dayBox" v-show="dayBtn">
+                        <li v-for="day in days" @click="selectDay(day)">{{day}}日</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="m-itemlist">
+                <div class="item-hd"></div>
+                <div class="item-ft"></div>
+                <div class="item-middle"></div>
+                <div class="listwrap">
+                    <ul @mousewheel='scrollTo($event)'>
+                        <li class="list-item" v-for="item of itemList" >            
+                            <span class="list-time">
+                                {{item.beginTime |formdata}} - {{item.endTime |formdata}}
+                            </span>
+                            <span class="list-title">{{item.title}}</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="m-disc">
+            <div class="disc-bg"></div>
+            <div class="disc-wrap">
+                <img :src="imgSrc" alt="" class="disc-img">
+            </div>
+            <div class="disc-arm"></div>
+        </div>
       </div>
     </div>
+    <div class="g-play">
+        <!-- <span class="m-voice"></span> -->
+        <wvoice></wvoice>
+        <span class="m-time">
+            {{dateSrc | formdate}}  {{timeSrc}}    
+        </span>
+        <span class="m-item">
+            {{nameSrc}}
+        </span>
+    </div>
+    <div class="audio">
+        <!-- <audio controls autoplay="autoplay">
+          <source :src="audioSrc" type="audio/ogg">
+          <source :src="audioSrc" type="audio/mpeg">
+            您的浏览器不支持 audio 元素。
+        </audio> -->
+        <!-- <video id="example-video" width=600 height=300 class="video-js vjs-default-skin" controls autoplay>
+          <source
+             src="https://d2zihajmogu5jn.cloudfront.net/bipbop-advanced/bipbop_16x9_variant.m3u8"
+             type="application/x-mpegURL">
+        </video> -->
+        <video id="video"></video>
+    </div>
+    <span style="display: none">{{stamp}}</span>
   </div>
 </template>
 
 <script>
-
+import { getLiveItem, getClassItem, getChannelItem, clickItem } from '@/api.js'
+import voice from './voice.vue'
+import videojs from 'video.js'
+const years = [
+    {id:2017},
+    {id:2016},
+]
 export default {
   name: 'app',
+  components:{
+    wvoice:voice
+  },  
   data() {
     return {
-        showBtn:false
+        showBtn:[true,false,false],
+        yearBtn:false,
+        monthBtn:false,
+        dayBtn:false,
+        top:0,
+        years:years,
+        year:new Date().getFullYear() + '年',
+        month:new Date().getMonth() + 1 + '月',
+        day:new Date().getDate() + '日',
+        audioSrc:'',
+        imgSrc:"",
+        timeSrc:'',
+        nameSrc:'',
+        dateSrc:'',
+        hnItemList:[], //河南电台列表
+        wlItemList:[], //网络电台列表
+        dsItemList:[], //地市台列表
+        itemList:[], //节目列表
+        cid:1
+    }
+  },
+  created(){
+    getClassItem(1).then((res) => {
+        let data = res.data;
+        this.hnItemList = data;
+    })
+    getClassItem(2).then((res) => {
+        let data = res.data;
+        this.wlItemList = data;
+    })
+    getClassItem(3).then((res) => {
+        let data = res.data;
+        this.dsItemList = data;
+    })
+    getChannelItem(1).then((res) => {
+        let data = res.data;
+        this.itemList = data.programs;
+        this.imgSrc = 'http://program.hndt.com' + data.image;
+        this.timeSrc = data.time;
+        this.nameSrc = data.live;
+    })
+    this.dateSrc =(new Date()).getTime();
+  },
+  mounted(){
+    // $('.listwrap').scrollTop(0);
+    if(Hls.isSupported()) {
+        var video = document.getElementById('video');
+        var hls = new Hls();
+        hls.loadSource('http://stream.hndt.com:1935/live/xinwen/playlist.m3u8');
+        hls.attachMedia(video);
+        hls.on(Hls.Events.MANIFEST_PARSED,function() {
+          video.play();
+    });
+    }
+  },
+  computed:{
+    days() {
+        var year = parseInt(this.year);
+        var daylen=0;
+        if (/1|3|5|7|8|10|12/.test(this.month)) {
+            daylen = 31;
+        }
+        else if (/4|6|9|11/.test(this.month)) {
+            daylen=30;
+        }
+        else if (/2/.test(this.month)) {
+            if (year % 4 === 0 && year % 100 !==0 || year % 400 === 0) {
+                daylen=29;
+            }
+            else {
+                daylen=28;
+            }
+        }
+        return daylen
+    },
+    stamp() {
+        //2015-03-05 17:59:00.0
+        var year,month= parseInt(this.month),day = parseInt(this.day);
+        if(month < 10){
+            month = '0' + month
+        }
+        if(day < 10){
+            day = '0' + day;
+        }
+        var date = parseInt(this.year) + '-' + month + '-' + day;
+        var date = date + ' 00:00:00.0';
+        var datestamp = this.timeToStamp(date);
+        clickItem(this.cid, datestamp).then((res) => {
+            let data = res.data;
+            this.itemList = data.programs;
+            this.imgSrc = 'http://program.hndt.com' + data.image;
+            this.timeSrc = data.time;
+            this.nameSrc = data.live;
+        })
+        this.dateSrc = datestamp * 1000;
+        return datestamp;
     }
   },
   methods:{
-    slideList() {
-        this.showBtn = !this.showBtn
+    slideList(index) {
+        this.showBtn.splice(index,1,!this.showBtn[index])
+    },
+    scrollTo(event){
+        event.preventDefault()
+        let top = event.wheelDelta;
+        if(top > 0){
+            this.top = this.top - 40;
+        }else{
+            this.top = this.top + 40;
+        }        
+        $('.listwrap').scrollTop(this.top);
+    },
+    selectYear(year){
+        this.year = year + '年';
+        this.yearBtn = false;
+    },
+    selectMonth(month){
+        if(month < 10){
+            month = '0' + month;
+        }
+        this.month = month + '月'
+        this.monthBtn = false;
+    },
+    selectDay(day){
+        if(day < 10){
+            day = '0' + day;
+        }
+        this.day = day + '日'
+        this.dayBtn = false;
+    },
+    isActive(cid){
+        this.cid  = cid;
+        getChannelItem(cid).then((res) => {
+            let data = res.data;
+            this.itemList = data.programs;
+            this.imgSrc = 'http://program.hndt.com' + data.image;
+            this.timeSrc = data.time;
+            this.nameSrc = data.live;
+        })
+    },
+    timeToStamp(date){
+        // var date = '2015-03-05 17:59:00.0';
+        date = date.substring(0,19);    
+        date = date.replace(/-/g,'/'); 
+        var timestamp = new Date(date).getTime();
+        return timestamp/1000;
     }
   }
 }
 </script>
 
 <style scoped lang="stylus">
+@keyframes rotate
+    0%
+        transform rotate(0deg)
+    100%
+        transform rotate(360deg)
+@keyframes armrotate
+    0%
+        transform rotate(0deg)
+    50%
+        transform rotate(-9deg)
+    100%
+        transform rotate(0deg)
+body
+    background #f8f8f8
 #app
     position: absolute
     top 0
     bottom 0
+    left 0
+    right 0
+    min-width 1500px
+    background #f8f8f8
+    .g-logo
+        position: absolute
+        z-index: 5
+        right 0
+        top 40px
     .g-sd
         position: relative
         float left
@@ -76,9 +318,13 @@ export default {
                 text-align center
                 font-size 15px
                 color #222
-                background #f8f8f8
+                background-color #f8f8f8
                 margin-top 1px
                 cursor: pointer
+                &:hover
+                    background-color rgba(255, 255, 255, .92)
+                &:active
+                    background-color rgba(255, 255, 255, .75)                
                 .icon-down
                     position: absolute
                     line-height 40px
@@ -94,14 +340,185 @@ export default {
                     color #fff
                     cursor: pointer
                     &:hover
-                        background blue
+                        background #0080cc
+                    &.isActive
+                        background #0080cc
     .g-mn
         float right 
         width 100%
         height 100%
         .g-mnc
+            position: fixed
+            left 0
+            right 0
+            top 0
+            bottom 0            
             margin-left 160px
-            min-width 970px
+            min-width 1350px
             height 100%
-            background #eee
+            background url('./imgs/bg.png') center center no-repeat
+            backgorund-size cover
+            background-color #f8f8f8
+            .m-daylist
+                float left
+                width 450px
+                margin-top 270px
+                margin-left 180px
+                .m-datepick
+                    .item
+                        position: relative
+                        z-index 10
+                        float left
+                        height 30px
+                        line-height 30px
+                        margin-right 20px
+                        .ipt
+                            vertical-align top
+                            width 90px  
+                            height 30px
+                            line-height 30px
+                            text-indent 16px
+                            background #ddd
+                            border 1px solid #999
+                            box-sizing border-box
+                            font-size 15px
+                            color #666 
+                        .select
+                            display inline-block
+                            width 30px
+                            height 30px
+                            line-height 30px
+                            text-align center
+                            color #fff
+                            font-size 12px
+                            background-color #444
+                            cursor: pointer
+                        .yearBox,.monthBox,.dayBox
+                            position: absolute
+                            top 100%
+                            width 100%
+                            font-size 15px
+                            color #666
+                            text-indent 16px
+                            background-color #ddd
+                            border 1px solid #999
+                            box-sizing border-box
+                            border-top none 
+                            height 200px
+                            overflow auto
+                            li
+                                cursor: pointer
+                                &:hover
+                                    background #0080cc
+                                    color #fff
+                        &:nth-child(2),&:nth-child(3)
+                            .ipt
+                                width 70px   
+                .m-itemlist
+                    position: relative
+                    width 382px
+                    height 320px                
+                    margin-top 40px
+                    .item-hd
+                        position: absolute
+                        width 100%
+                        height 40px
+                        top 0
+                        background rgba(248, 248, 248, .8)
+                    .item-ft
+                        position: absolute
+                        width 100%
+                        bottom 0
+                        height 40px
+                        background rgba(248, 248, 248, .8)
+                    .item-middle
+                        position: absolute
+                        z-index -1
+                        top 120px
+                        width 100%
+                        height 40px
+                        background #ffea02
+                    .listwrap
+                        width 100%
+                        height 320px
+                        overflow auto
+                        ul
+                            padding 120px 0 160px
+                            .list-item
+                                width 380px
+                                height 40px
+                                line-height 40px
+                                text-align center
+                                font-size 16px 
+                                font-weight 500
+                                color #333
+                                cursor: pointer
+                                .list-time
+                                    display inline-block
+                                    width 120px
+                                    text-align center
+                                .list-title
+                                    display inline-block
+                                    width 250px
+                                    text-align center
+            .m-disc
+                position: relative
+                float left
+                margin-top 180px
+                margin-left 60px
+                .disc-bg
+                    position: absolute
+                    left 106px
+                    top 100px
+                    z-index: -1
+                    width 670px
+                    height 670px
+                    background url('./imgs/shadow.png') center center no-repeat
+                    background-size cover
+                .disc-wrap
+                    -webkit-animation rotate 6s linear infinite
+                    -moz-animation rotate 6s linear infinite
+                    -o-animation rotate 6s linear infinite
+                    animation rotate 6s linear infinite
+                    width 622px
+                    height 622px
+                    line-height 622px
+                    text-align center
+                    background url('./imgs/disc.png') center center no-repeat
+                    .disc-img
+                        vertical-align middle
+                        width 235px
+                        border-radius 50%
+                .disc-arm
+                    position: absolute
+                    top 10px
+                    right -48px
+                    width 147px
+                    height 341px
+                    transform-origin top right
+                    animation armrotate 20s linear infinite
+                    background url('./imgs/tone-arm.png') center center no-repeat
+    .g-play
+        position: absolute
+        z-index: 5
+        right 40px
+        bottom 40px
+        .m-voice
+            display inline-block
+            width 27px
+            height 23px
+            background url('./imgs/voice.png') center center no-repeat
+            background-size cover
+        .m-time
+            margin-left 10px
+            font-size 14px
+            color #666
+        .m-item
+            margin-left 10px
+            padding 6px 10px
+            font-size 16px
+            background #333
+            color #fff
+    .audio
+        display none
 </style>
