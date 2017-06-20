@@ -20,9 +20,6 @@ body,textarea,input,button,select,keygen,legend{font:12px/1.14 arial,'Microsoft 
 body{background:#fff;}
 a,a:hover{color:#333;}
 .clearfix::after{display:block;visibility:hidden;clear:both;overflow:hidden;height:0;content:' ';}
-html{
-    font-size:100px;
-}
 /*定义滚动条宽高及背景，宽高分别对应横竖滚动条的尺寸*/
 .g-sd::-webkit-scrollbar,.yearBox::-webkit-scrollbar,.monthBox::-webkit-scrollbar,.dayBox::-webkit-scrollbar{
     width: 7px;

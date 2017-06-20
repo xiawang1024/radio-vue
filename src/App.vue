@@ -259,9 +259,10 @@ export default {
             this.timeSrc = data.time;
             this.nameSrc = data.live;
             this.$nextTick(() => {
-                $('.listwrap').scrollTop(500);
-            })
-            this.isPlayIndex()
+                this.top = 0;
+                this.isPlayIndex()
+                $('.listwrap').scrollTop(this.top);
+            })            
         })
     },
     timeToStamp(date){
@@ -367,7 +368,7 @@ body
         width 100%
         height 100%
         .g-mnc
-            position: fixed
+            position: absolute
             left 0
             right 0
             top 0
@@ -381,8 +382,8 @@ body
             .m-daylist
                 float left
                 width 450px
-                margin-top 270px
-                margin-left 180px
+                margin-top 10%
+                margin-left 8%
                 .m-datepick
                     .item
                         position: relative
@@ -452,12 +453,13 @@ body
                         background rgba(248, 248, 248, .8)
                     .item-middle
                         position: absolute
-                        z-index -1
+                        // z-index -1
                         top 120px
                         width 100%
                         height 40px
                         background #ffea02
                     .listwrap
+                        position: relative
                         width 100%
                         height 320px
                         overflow auto
@@ -479,12 +481,15 @@ body
                                 .list-title
                                     display inline-block
                                     width 250px
+                                    // white-space nowrap
+                                    // overflow hidden
+                                    // text-overflow: ellipsis
                                     text-align center
             .m-disc
                 position: relative
                 float left
-                margin-top 180px
-                margin-left 60px
+                margin-top 4%
+                margin-left 4%
                 .disc-bg
                     position: absolute
                     left 106px
