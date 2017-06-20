@@ -154,8 +154,11 @@ export default {
         this.imgSrc = 'http://program.hndt.com' + data.image;
         this.timeSrc = data.time;
         this.nameSrc = data.live;
-        this.$nextTick(function(){})
-        this.isPlayIndex()
+        this.$nextTick(() => {
+            this.isPlayIndex()
+            $('.listwrap').scrollTop(this.top);
+        })
+        
     })
     this.dateSrc =(new Date()).getTime();
   },
@@ -170,7 +173,6 @@ export default {
           video.play();
         });
     } 
-    $('.listwrap ul').scrollTop(300); 
   },
   computed:{
     days() {
@@ -228,6 +230,7 @@ export default {
             this.top = this.top + 40;
         }        
         $('.listwrap').scrollTop(this.top);
+        console.log($('.listwrap').scrollTop())
     },
     selectYear(year){
         this.year = year + '年';
@@ -255,7 +258,9 @@ export default {
             this.imgSrc = 'http://program.hndt.com' + data.image;
             this.timeSrc = data.time;
             this.nameSrc = data.live;
-            this.$nextTick(function(){})
+            this.$nextTick(() => {
+                $('.listwrap').scrollTop(500);
+            })
             this.isPlayIndex()
         })
     },
@@ -276,11 +281,11 @@ export default {
             let item = data[i];
             if(item.beginTime < time && item.endTime > time){
                 index = i;
-                console.log(index)
+                this.top = index * 40;
                 return;
             }
         }
-        this.top = index * 40;
+        
         console.log(this.top)
     }
   }
