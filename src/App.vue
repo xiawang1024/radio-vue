@@ -91,16 +91,6 @@
         </span>
     </div>
     <div class="audio">
-        <!-- <audio controls autoplay="autoplay">
-          <source :src="audioSrc" type="audio/ogg">
-          <source :src="audioSrc" type="audio/mpeg">
-            您的浏览器不支持 audio 元素。
-        </audio> -->
-        <!-- <video id="example-video" width=600 height=300 class="video-js vjs-default-skin" controls autoplay>
-          <source
-             src="https://d2zihajmogu5jn.cloudfront.net/bipbop-advanced/bipbop_16x9_variant.m3u8"
-             type="application/x-mpegURL">
-        </video> -->
         <video id="video"></video>
     </div>
     <span style="display: none">{{stamp}}</span>
@@ -110,7 +100,6 @@
 <script>
 import { getLiveItem, getClassItem, getChannelItem, clickItem } from '@/api.js'
 import voice from './voice.vue'
-import videojs from 'video.js'
 const years = [
     {id:2017},
     {id:2016},
@@ -126,7 +115,7 @@ export default {
         yearBtn:false,
         monthBtn:false,
         dayBtn:false,
-        top:0,
+        top:-120,
         years:years,
         year:new Date().getFullYear() + '年',
         month:new Date().getMonth() + 1 + '月',
@@ -147,14 +136,17 @@ export default {
     getClassItem(1).then((res) => {
         let data = res.data;
         this.hnItemList = data;
+        this.$nextTick(function(){})
     })
     getClassItem(2).then((res) => {
         let data = res.data;
         this.wlItemList = data;
+        this.$nextTick(function(){})
     })
     getClassItem(3).then((res) => {
         let data = res.data;
         this.dsItemList = data;
+        this.$nextTick(function(){})
     })
     getChannelItem(1).then((res) => {
         let data = res.data;
@@ -162,6 +154,8 @@ export default {
         this.imgSrc = 'http://program.hndt.com' + data.image;
         this.timeSrc = data.time;
         this.nameSrc = data.live;
+        this.$nextTick(function(){})
+        this.isPlayIndex()
     })
     this.dateSrc =(new Date()).getTime();
   },
@@ -174,8 +168,9 @@ export default {
         hls.attachMedia(video);
         hls.on(Hls.Events.MANIFEST_PARSED,function() {
           video.play();
-    });
-    }
+        });
+    } 
+    $('.listwrap ul').scrollTop(300); 
   },
   computed:{
     days() {
@@ -260,6 +255,8 @@ export default {
             this.imgSrc = 'http://program.hndt.com' + data.image;
             this.timeSrc = data.time;
             this.nameSrc = data.live;
+            this.$nextTick(function(){})
+            this.isPlayIndex()
         })
     },
     timeToStamp(date){
@@ -268,6 +265,23 @@ export default {
         date = date.replace(/-/g,'/'); 
         var timestamp = new Date(date).getTime();
         return timestamp/1000;
+    },
+    isPlayIndex(){
+        var time = (new Date()).getTime()/1000;
+        console.log(time)
+        var data = this.itemList;
+        let len = data.length;
+        var index=0;
+        for(let i =0 ;i < len ; i++){
+            let item = data[i];
+            if(item.beginTime < time && item.endTime > time){
+                index = i;
+                console.log(index)
+                return;
+            }
+        }
+        this.top = index * 40;
+        console.log(this.top)
     }
   }
 }
