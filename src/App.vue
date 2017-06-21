@@ -92,7 +92,7 @@
     <div class="audio">
         <video id="my_video_1" class="video-js vjs-default-skin" controls preload="auto" autoplay="autoplay" width="0" height="0" 
           data-setup='{}'>
-            <source><!-- http://imagesjys.amailive.com/data/L02039/video/005-1482127551/index.m3u8 -->
+            <source>
         </video>
     </div>
     <span style="display: none">{{stamp}}</span>
@@ -298,7 +298,7 @@ export default {
     //判断直播所在位置
     isPlayIndex(){
         var time = (new Date()).getTime()/1000;
-        console.log(time)
+        // console.log(time)
         var data = this.itemList;
         let len = data.length;
         var index=0;
