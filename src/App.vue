@@ -331,7 +331,6 @@ body
     bottom 0
     left 0
     right 0
-    min-width 1500px
     background #f8f8f8
     .g-logo
         position: absolute
@@ -339,11 +338,12 @@ body
         right 0
         top 40px
     .g-sd
-        position: relative
-        float left
+        position: fixed
+        top 0 
+        left 0
+        right 160px
+        bottom 0
         width 160px
-        height 100%
-        margin-right -160px
         overflow auto
         background #333
         .m-list
@@ -381,26 +381,27 @@ body
                     &.isActive
                         background #0080cc
     .g-mn
-        float right 
         width 100%
         height 100%
+        min-width 1080px
         .g-mnc
-            position: absolute
-            left 0
+            position: fixed
+            left 160px
             right 0
             top 0
-            bottom 0            
-            margin-left 160px
-            min-width 1350px
-            height 100%
+            bottom 0 
+            min-width 1080px           
             background url('./imgs/bg.png') center center no-repeat
             backgorund-size cover
             background-color #f8f8f8
             .m-daylist
-                float left
+                position: absolute
+                left 100px
+                top 0
+                bottom 0
+                margin auto 0
                 width 450px
-                margin-top 20%
-                margin-left 8%
+                height 400px
                 .m-datepick
                     .item
                         position: relative
@@ -504,17 +505,19 @@ body
                                     // text-overflow: ellipsis
                                     text-align center
             .m-disc
-                position: relative
-                float left
-                margin-top 12%
-                margin-left 4%
+                position: absolute
+                top 0 
+                bottom 0
+                left 550px
+                height 7rem
+                margin auto 0
                 .disc-bg
                     position: absolute
-                    left 106px
-                    top 100px
+                    left 1.06rem
+                    top 1rem
                     z-index: -1
-                    width 670px
-                    height 670px
+                    width 6.7rem
+                    height 6.7rem
                     background url('./imgs/shadow.png') center center no-repeat
                     background-size cover
                 .disc-wrap
@@ -522,24 +525,26 @@ body
                     -moz-animation rotate 6s linear infinite
                     -o-animation rotate 6s linear infinite
                     animation rotate 6s linear infinite
-                    width 622px
-                    height 622px
-                    line-height 622px
+                    width 6.22rem
+                    height 6.22rem
+                    line-height 6.22rem
                     text-align center
                     background url('./imgs/disc.png') center center no-repeat
+                    background-size cover
                     .disc-img
                         vertical-align middle
-                        width 235px
+                        width 2.35rem
                         border-radius 50%
                 .disc-arm
                     position: absolute
-                    top 10px
-                    right -48px
-                    width 147px
-                    height 341px
+                    top 0.1rem
+                    right -0.48rem
+                    width 1.47rem
+                    height 3.41rem
                     transform-origin top right
                     animation armrotate 20s linear infinite
                     background url('./imgs/tone-arm.png') center center no-repeat
+                    background-size cover
     .g-play
         position: absolute
         z-index: 5

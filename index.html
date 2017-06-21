@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html style="font-size:100px">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -8,14 +8,46 @@
     <title>河南广播网</title>
     <link rel="stylesheet" type="text/css" href="./static/reset.css">
     <link rel="stylesheet" type="text/css" href="./static/font/style.css">
-    <link href="./static/video/video.css" rel="stylesheet">
+    <script type="text/javascript" src=./static/zepto.js></script>
+    <script type="text/javascript">
+        $(function(){
+            console.log($(window).width())
+            var width = $(window).width();
+            var ratio = null;
+            if(width >= 1080){
+                if(width >= 1800){
+                    width = 1800
+                }
+                ratio = width / 1800;
+            }else{
+                ratio = 1080 / 1800;
+            }
+            
+            $('html').css("font-size",100 * ratio)
+ 
+            $(window).resize(function(e){
+                width = e.srcElement.innerWidth;
+                if(width >= 1080){
+                    if(width >= 1800){
+                        width = 1800
+                    }
+                    ratio = width / 1800;
+                }else{
+                    ratio = 1080 / 1800;
+                }
+                
+                $('html').css("font-size",100 * ratio)
+                
+            })
+        })
+        
+    </script>
   </head>
   <body>
     <div id="app"></div>
     <!-- built files will be auto injected -->
     <div id="liveWrap" style="position: absolute;"></div>
     <script type="text/javascript" src="./static/ckplayer/ckplayer.js" charset="utf-8"></script>
-    <script type="text/javascript" src=./static/jquery.js></script>
     <script type="text/javascript">
         function showPlayer(src) {
             //player
