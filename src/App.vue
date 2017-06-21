@@ -89,12 +89,6 @@
         <span class="m-item" v-html="nameSrc">
         </span>
     </div>
-    <div class="audio">
-        <video id="my_video_1" class="video-js vjs-default-skin" controls preload="auto" autoplay="autoplay" width="0" height="0" 
-          data-setup='{}'>
-            <source>
-        </video>
-    </div>
     <span style="display: none">{{stamp}}</span>
   </div>
 </template>
@@ -158,11 +152,7 @@ export default {
         this.timeSrc = data.time;
         this.nameSrc = data.live;
         this.audioSrc = data.streams[0];
-        this.player.src({
-          src: this.audioSrc,
-          type: 'application/x-mpegURL',
-        });
-        this.player.play();
+        showPlayer(this.audioSrc)
         this.$nextTick(() => {
             this.isPlayIndex()
             $('.listwrap').scrollTop(this.top);
@@ -172,8 +162,7 @@ export default {
     this.dateSrc =(new Date()).getTime();
   },
   mounted(){
-    this.player = videojs('my_video_1');
-    this.player.play();
+
   },
   computed:{
     days() {
@@ -275,11 +264,7 @@ export default {
                 this.nameSrc = data.live;
             }
             this.audioSrc = data.streams[0];
-            this.player.src({
-              src: this.audioSrc,
-              type: 'application/x-mpegURL',
-            });
-            this.player.play()
+            showPlayer(this.audioSrc)
             this.$nextTick(() => {
                 this.top = 0;
                 this.isPlayIndex()
@@ -319,12 +304,7 @@ export default {
             this.audioSrc = playUrl[0];
             this.$nextTick(function(){})
         } 
-        console.log(this.audioSrc)
-        this.player.src({
-          src: this.audioSrc,
-          type: 'application/x-mpegURL',
-        });
-        this.player.play()
+        showPlayer(this.audioSrc)
     },
   }
 }

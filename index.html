@@ -13,19 +13,23 @@
   <body>
     <div id="app"></div>
     <!-- built files will be auto injected -->
-    <div id="a1"></div>
+    <div id="liveWrap" style="position: absolute;"></div>
     <script type="text/javascript" src="./static/ckplayer/ckplayer.js" charset="utf-8"></script>
-    <script type="text/javascript">
-        var flashvars={
-            f:'http://stream.hndt.com:1935/live/yule/playlist.m3u8',
-            p:1
-        };
-        var params={bgcolor:'#FFF',allowFullScreen:true,allowScriptAccess:'always',wmode:'transparent'};
-        CKobject.embedSWF('./static/ckplayer/ckplayer.swf','a1','ckplayer_a1','600','400',flashvars,params);
-    </script>
     <script type="text/javascript" src=./static/jquery.js></script>
-    <script type="text/javascript" src="./static/video/video.js"></script>  
-    <script src="https://unpkg.com/videojs-flash/dist/videojs-flash.js"></script>
-    <script src="https://unpkg.com/videojs-contrib-hls/dist/videojs-contrib-hls.js"></script>  
+    <script type="text/javascript">
+        function showPlayer(src) {
+            //player
+            var flashvars = {
+                f: '/static/ckplayer/m3u8.swf',
+                a: src,
+                c: 0,
+                s: 4,
+                p: 1,
+                lv: 1,//注意，如果是直播，需设置lv:1
+            };
+            var video = [src];
+            CKobject.embed('/static/ckplayer/ckplayer.swf', 'liveWrap', 'ck-video', '0', "0", false, flashvars, video);
+        }
+    </script> 
   </body>
 </html>
