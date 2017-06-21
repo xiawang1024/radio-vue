@@ -34,8 +34,8 @@
     </div>
     <div class="g-mn">
       <div class="g-mnc clearfix">
-        <div class="m-daylist">
-            <div class="m-datepick clearfix">
+        <div class="m-daylist" >
+            <div class="m-datepick clearfix" v-show="itemList.length > 0">
                 <div class="item"  @mouseenter="yearBtn = true" @mouseleave="yearBtn = false">
                     <input class="ipt" type="text" readonly name="" value="2017年" v-model="year" ><span class="select"><i class="white icon-down"></i></span>
                     <ul class="yearBox" v-show="yearBtn">
@@ -55,13 +55,13 @@
                     </ul>
                 </div>
             </div>
-            <div class="m-itemlist">
+            <div class="m-itemlist" v-show="itemList.length > 0">
                 <div class="item-hd"></div>
                 <div class="item-ft"></div>
                 <div class="item-middle"></div>
                 <div class="listwrap">
                     <ul @mousewheel='scrollTo($event)'>
-                        <li class="list-item" v-for="item of itemList" >            
+                        <li class="list-item" v-for="(item,index) of itemList" @click="selectItem(index,item.playUrl)">            
                             <span class="list-time">
                                 {{item.beginTime |formdata}} - {{item.endTime |formdata}}
                             </span>
@@ -86,12 +86,14 @@
         <span class="m-time">
             {{dateSrc | formdate}}  {{timeSrc}}    
         </span>
-        <span class="m-item">
-            {{nameSrc}}
+        <span class="m-item" v-html="nameSrc">
         </span>
     </div>
     <div class="audio">
-        <video id="video"></video>
+        <video id="my_video_1" class="video-js vjs-default-skin" controls preload="auto" autoplay="autoplay" width="0" height="0" 
+          data-setup='{}'>
+            <source><!-- http://imagesjys.amailive.com/data/L02039/video/005-1482127551/index.m3u8 -->
+        </video>
     </div>
     <span style="display: none">{{stamp}}</span>
   </div>
@@ -129,7 +131,8 @@ export default {
         wlItemList:[], //网络电台列表
         dsItemList:[], //地市台列表
         itemList:[], //节目列表
-        cid:1
+        cid:1,
+        player:null
     }
   },
   created(){
@@ -154,6 +157,12 @@ export default {
         this.imgSrc = 'http://program.hndt.com' + data.image;
         this.timeSrc = data.time;
         this.nameSrc = data.live;
+        this.audioSrc = data.streams[0];
+        this.player.src({
+          src: this.audioSrc,
+          type: 'application/x-mpegURL',
+        });
+        this.player.play();
         this.$nextTick(() => {
             this.isPlayIndex()
             $('.listwrap').scrollTop(this.top);
@@ -163,16 +172,8 @@ export default {
     this.dateSrc =(new Date()).getTime();
   },
   mounted(){
-    // $('.listwrap').scrollTop(0);
-    if(Hls.isSupported()) {
-        var video = document.getElementById('video');
-        var hls = new Hls();
-        hls.loadSource('http://stream.hndt.com:1935/live/xinwen/playlist.m3u8');
-        hls.attachMedia(video);
-        hls.on(Hls.Events.MANIFEST_PARSED,function() {
-          video.play();
-        });
-    } 
+    this.player = videojs('my_video_1');
+    this.player.play();
   },
   computed:{
     days() {
@@ -211,7 +212,11 @@ export default {
             this.itemList = data.programs;
             this.imgSrc = 'http://program.hndt.com' + data.image;
             this.timeSrc = data.time;
-            this.nameSrc = data.live;
+            if(data.live.length == 0){
+                this.nameSrc = data.name;
+            }else{
+                this.nameSrc = data.live;
+            }
         })
         this.dateSrc = datestamp * 1000;
         return datestamp;
@@ -223,14 +228,20 @@ export default {
     },
     scrollTo(event){
         event.preventDefault()
-        let top = event.wheelDelta;
+        let top = event.wheelDelta; 
+        let len = this.itemList.length;
+        if(this.top < 0){
+            this.top = 0
+        }   
+        if(this.top > 40 * len){
+            this.top = 40 * len;
+        }       
         if(top > 0){
             this.top = this.top - 40;
-        }else{
+        }else if(top < 0){
             this.top = this.top + 40;
-        }        
+        }         
         $('.listwrap').scrollTop(this.top);
-        console.log($('.listwrap').scrollTop())
     },
     selectYear(year){
         this.year = year + '年';
@@ -250,6 +261,7 @@ export default {
         this.day = day + '日'
         this.dayBtn = false;
     },
+    //直播频道选择
     isActive(cid){
         this.cid  = cid;
         getChannelItem(cid).then((res) => {
@@ -257,7 +269,17 @@ export default {
             this.itemList = data.programs;
             this.imgSrc = 'http://program.hndt.com' + data.image;
             this.timeSrc = data.time;
-            this.nameSrc = data.live;
+            if(data.live.length == 0){
+                this.nameSrc = data.name;
+            }else{
+                this.nameSrc = data.live;
+            }
+            this.audioSrc = data.streams[0];
+            this.player.src({
+              src: this.audioSrc,
+              type: 'application/x-mpegURL',
+            });
+            this.player.play()
             this.$nextTick(() => {
                 this.top = 0;
                 this.isPlayIndex()
@@ -265,6 +287,7 @@ export default {
             })            
         })
     },
+    //时间转时间戳
     timeToStamp(date){
         // var date = '2015-03-05 17:59:00.0';
         date = date.substring(0,19);    
@@ -272,6 +295,7 @@ export default {
         var timestamp = new Date(date).getTime();
         return timestamp/1000;
     },
+    //判断直播所在位置
     isPlayIndex(){
         var time = (new Date()).getTime()/1000;
         console.log(time)
@@ -286,9 +310,22 @@ export default {
                 return;
             }
         }
-        
-        console.log(this.top)
-    }
+    },
+    //点播
+    selectItem(index,playUrl){
+        this.top = index * 40;
+        $('.listwrap').scrollTop(this.top);
+        if(playUrl && playUrl.length > 0){
+            this.audioSrc = playUrl[0];
+            this.$nextTick(function(){})
+        } 
+        console.log(this.audioSrc)
+        this.player.src({
+          src: this.audioSrc,
+          type: 'application/x-mpegURL',
+        });
+        this.player.play()
+    },
   }
 }
 </script>
@@ -382,7 +419,7 @@ body
             .m-daylist
                 float left
                 width 450px
-                margin-top 10%
+                margin-top 20%
                 margin-left 8%
                 .m-datepick
                     .item
@@ -462,7 +499,8 @@ body
                         position: relative
                         width 100%
                         height 320px
-                        overflow auto
+                        overflow-y auto
+                        overflow-x hidden
                         ul
                             padding 120px 0 160px
                             .list-item
@@ -488,7 +526,7 @@ body
             .m-disc
                 position: relative
                 float left
-                margin-top 4%
+                margin-top 12%
                 margin-left 4%
                 .disc-bg
                     position: absolute
@@ -527,6 +565,7 @@ body
         z-index: 5
         right 40px
         bottom 40px
+        min-width 200px
         .m-voice
             display inline-block
             width 27px
