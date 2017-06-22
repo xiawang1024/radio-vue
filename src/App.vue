@@ -61,7 +61,7 @@
                 <div class="item-middle"></div>
                 <div class="listwrap">
                     <ul @mousewheel='scrollTo($event)'>
-                        <li class="list-item" v-for="(item,index) of itemList" @click="selectItem(index,item.playUrl)">            
+                        <li class="list-item" v-for="(item,index) of itemList" @click="selectItem(index,item.playUrl,item.title,item.beginTime,item.endTime)">            
                             <span class="list-time">
                                 {{item.beginTime |formdata}} - {{item.endTime |formdata}}
                             </span>
@@ -90,7 +90,11 @@
         </span>
     </div>
     <div class="audio">
-        
+       <!--  <video id=example-video width=600 height=300 class="video-js vjs-default-skin" controls>
+          <source
+             src="http://stream.hndt.com:1935/live/xinwen/playlist.m3u8"
+             type="application/x-mpegURL">
+        </video> -->
     </div>
     <span style="display: none">{{stamp}}</span>
   </div>
@@ -165,7 +169,8 @@ export default {
     this.dateSrc =(new Date()).getTime();
   },
   mounted(){
-
+    // var player = videojs('example-video');
+    // player.play();
   },
   computed:{
     days() {
@@ -283,6 +288,20 @@ export default {
         var timestamp = new Date(date).getTime();
         return timestamp/1000;
     },
+    //时间戳转时间
+    stampTotime(value){
+        var val = parseInt(value) * 1000;
+        var time = new Date(val);
+        var hour = time.getHours();
+        var min = time.getMinutes();
+        if(hour < 10){
+            hour = '0' + hour;
+        }
+        if(min < 10){
+            min = '0' + min
+        }
+        return hour + ':' + min;
+    },
     //判断直播所在位置
     isPlayIndex(){
         var time = (new Date()).getTime()/1000;
@@ -300,11 +319,13 @@ export default {
         }
     },
     //点播
-    selectItem(index,playUrl){
+    selectItem(index,playUrl,title,beginTime,endTime){
         this.top = index * 40;
         $('.listwrap').scrollTop(this.top);
         if(playUrl && playUrl.length > 0){
             this.audioSrc = playUrl[0];
+            this.nameSrc = title;
+            this.timeSrc = this.stampTotime(beginTime) + '-' + this.stampTotime(endTime);
             this.$nextTick(function(){})
         } 
         showPlayer(this.audioSrc)
