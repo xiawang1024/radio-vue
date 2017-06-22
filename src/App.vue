@@ -261,6 +261,9 @@ export default {
     //直播频道选择
     isActive(cid){
         this.cid  = cid;
+        this.year = new Date().getFullYear() + '年';
+        this.month = new Date().getMonth() + 1 + '月';
+        this.day = new Date().getDate() + '日';
         getChannelItem(cid).then((res) => {
             let data = res.data;
             this.itemList = data.programs;
