@@ -89,6 +89,9 @@
         <span class="m-item" v-html="nameSrc">
         </span>
     </div>
+    <div class="audio">
+        
+    </div>
     <span style="display: none">{{stamp}}</span>
   </div>
 </template>
@@ -508,7 +511,7 @@ body
                 position: absolute
                 top 0 
                 bottom 0
-                left 550px
+                left 7rem
                 height 7rem
                 margin auto 0
                 .disc-bg
