@@ -7,6 +7,6 @@
 <font-face units-per-em="1024" ascent="960" descent="-64" />
 <missing-glyph horiz-adv-x="1024" />
 <glyph unicode="&#x20;" horiz-adv-x="512" d="" />
-<glyph unicode="&#xe900;" glyph-name="down" d="M512 97.177l512 639.974h-1024l512-639.974z" />
-<glyph unicode="&#xe901;" glyph-name="up" d="M512 798.823l-512-639.974h1024l-512 639.974z" />
+<glyph unicode="&#xe900;" glyph-name="down" horiz-adv-x="1025" d="M811.161 618.553l-299.033-341.191-298.948 341.191h597.98z" />
+<glyph unicode="&#xe901;" glyph-name="right" d="M261.321 893.017l538.615-435.498c6.262-5.063 6.262-14.61 0-19.673l-538.615-435.493c-8.271-6.688-20.603-0.8-20.603 9.837v870.99c0 10.637 12.332 16.524 20.603 9.836z" />
 </font></defs></svg>
