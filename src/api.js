@@ -1,7 +1,7 @@
 import axios from 'axios'
 // import Qs from 'qs'
-axios.defaults.baseURL = 'http://program.hndt.com'
-// axios.defaults.baseURL = '/api'
+// axios.defaults.baseURL = 'http://program.hndt.com'
+axios.defaults.baseURL = '/api'
 /**
  * 全部直播列表
  * @return {[type]} [description]

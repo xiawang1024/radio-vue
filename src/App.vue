@@ -66,6 +66,7 @@
                                 {{item.beginTime |formdata}} - {{item.endTime |formdata}}
                             </span>
                             <span class="list-title">{{item.title}}</span>
+                            <span class="play-icon" v-show="item.playUrl && item.playUrl.length > 0"></span><!-- v-show="item.playUrl && item.playUrl.length > 0" -->
                         </li>
                     </ul>
                 </div>
@@ -172,6 +173,17 @@ export default {
     // var player = videojs('example-video');
     // player.play();
   },
+  watch:{
+    year(){
+        $('.listwrap').scrollTop(0);
+    },
+    month(){
+        $('.listwrap').scrollTop(0);
+    },
+    day(){
+        $('.listwrap').scrollTop(0);
+    }
+  },
   computed:{
     days() {
         var year = parseInt(this.year);
@@ -215,7 +227,7 @@ export default {
                 this.nameSrc = data.live;
             }
         })
-        this.dateSrc = datestamp * 1000;
+        // this.dateSrc = datestamp * 1000;
         return datestamp;
     }
   },
@@ -269,6 +281,7 @@ export default {
             this.itemList = data.programs;
             this.imgSrc = 'http://program.hndt.com' + data.image;
             this.timeSrc = data.time;
+            this.dateSrc = this.stamp * 1000;
             if(data.live.length == 0){
                 this.nameSrc = data.name;
             }else{
@@ -324,14 +337,18 @@ export default {
     //点播
     selectItem(index,playUrl,title,beginTime,endTime){
         this.top = index * 40;
+        console.log(playUrl)
         $('.listwrap').scrollTop(this.top);
         if(playUrl && playUrl.length > 0){
             this.audioSrc = playUrl[0];
             this.nameSrc = title;
+            this.dateSrc = this.stamp * 1000;
             this.timeSrc = this.stampTotime(beginTime) + '-' + this.stampTotime(endTime);
             this.$nextTick(function(){})
-        } 
-        showPlayer(this.audioSrc)
+            showPlayer(this.audioSrc)
+        }else{
+            return 
+        }
     },
   }
 }
@@ -520,17 +537,26 @@ body
                                 font-weight 500
                                 color #333
                                 cursor: pointer
+                                overflow hidden
                                 .list-time
                                     display inline-block
-                                    width 120px
+                                    width 110px
                                     text-align center
                                 .list-title
                                     display inline-block
-                                    width 250px
+                                    width 225px
                                     // white-space nowrap
                                     // overflow hidden
                                     // text-overflow: ellipsis
                                     text-align center
+                                .play-icon
+                                    display inline-block
+                                    width 30px
+                                    height 30px
+                                    margin-top 5px
+                                    vertical-align -10px
+                                    background url('./imgs/play.png') center center no-repeat
+                                    background-size cover
             .m-disc
                 position: absolute
                 top 0 
