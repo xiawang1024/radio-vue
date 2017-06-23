@@ -1,13 +1,13 @@
 <template>
   <div id="app">
     <div class="g-logo">
-        <img src="./imgs/logo.png">
+        <a href="http://www.hndt.com/"><img src="./imgs/logo.png"></a>
     </div>
     <div class="g-sd">
       <div class="m-list">
           <div class="list-name" @click="slideList(0)">
               河南电台
-              <i class="icon-down"></i>
+              <i :class="showBtn[0] ? 'icon-down' : 'icon-right'"></i>
           </div>
           <ul class="list-box" v-show="showBtn[0]">
               <li class="list-item" v-for="item of hnItemList" @click="isActive(item.cid)" :class="{isActive: cid == item.cid ? true : false}">{{item.name}}</li>
@@ -16,7 +16,7 @@
       <div class="m-list">
           <div class="list-name" @click="slideList(1)">
               网络电台
-              <i class="icon-down"></i>
+              <i :class="showBtn[1] ? 'icon-down' : 'icon-right'"></i>
           </div>
           <ul class="list-box" v-show="showBtn[1]">
               <li class="list-item" v-for="item of wlItemList" @click="isActive(item.cid)" :class="{isActive: cid == item.cid ? true : false}">{{item.name}}</li>
@@ -25,7 +25,7 @@
       <div class="m-list">
           <div class="list-name" @click="slideList(2)">
               地市台
-              <i class="icon-down"></i>
+              <i :class="showBtn[2] ? 'icon-down' : 'icon-right'"></i>
           </div>
           <ul class="list-box" v-show="showBtn[2]">
               <li class="list-item" v-for="item of dsItemList" @click="isActive(item.cid)" :class="{isActive: cid == item.cid ? true : false}">{{item.name}}</li>
@@ -406,11 +406,13 @@ body
                     background-color rgba(255, 255, 255, .92)
                 &:active
                     background-color rgba(255, 255, 255, .75)                
-                .icon-down
+                .icon-down,.icon-right
                     position: absolute
                     line-height 40px
                     right 24px
-                    font-size 10px
+                    font-size 18px
+                .icon-right
+                    font-size 12px
             .list-box
                 .list-item
                     width 100%
@@ -475,6 +477,9 @@ body
                             font-size 12px
                             background-color #444
                             cursor: pointer
+                            .white
+                                font-size 16px
+                                line-height 30px
                         .yearBox,.monthBox,.dayBox
                             position: absolute
                             top 100%
