@@ -337,7 +337,7 @@ export default {
     //点播
     selectItem(index,playUrl,title,beginTime,endTime){
         this.top = index * 40;
-        console.log(playUrl)
+        // console.log(playUrl)
         $('.listwrap').scrollTop(this.top);
         if(playUrl && playUrl.length > 0){
             this.audioSrc = playUrl[0];

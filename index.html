@@ -56,7 +56,7 @@
         function showPlayer(src) {
             //player
             var flashvars = {
-                f: '/static/ckplayer/m3u8.swf',
+                f: 'static/ckplayer/m3u8.swf',
                 a: src,
                 c: 0,
                 s: 4,
@@ -64,7 +64,7 @@
                 lv: 1,//注意，如果是直播，需设置lv:1
             };
             var video = [src];
-            CKobject.embed('/static/ckplayer/ckplayer.swf', 'liveWrap', 'ck-video', '0', "0", false, flashvars, video);
+            CKobject.embed('static/ckplayer/ckplayer.swf', 'liveWrap', 'ck-video', '0', "0", false, flashvars, video);
         }
     </script> 
   </body>
