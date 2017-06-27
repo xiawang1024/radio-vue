@@ -3,6 +3,9 @@
     <div class="g-logo">
         <a href="http://www.hndt.com/"><img src="./imgs/logo.png"></a>
     </div>
+    <div class="g-bg-color">
+        <div class="bg-item" v-for="item of bgColors" :style="{backgroundColor:item.color}" title="设置背景色" @click="setBgColor(item.color)"></div>
+    </div>
     <div class="g-sd">
       <div class="m-list">
           <div class="list-name" @click="slideList(0)">
@@ -61,7 +64,7 @@
                 <div class="item-middle"></div>
                 <div class="listwrap">
                     <ul @mousewheel='scrollTo($event)'>
-                        <li class="list-item" v-for="(item,index) of itemList" @click="selectItem(index,item.playUrl,item.title,item.beginTime,item.endTime)">            
+                        <li class="list-item" :class="{listIsActive : listIndex == index ? true : false}" v-for="(item,index) of itemList" @click="selectItem(index,item.playUrl,item.title,item.beginTime,item.endTime)">
                             <span class="list-time">
                                 {{item.beginTime |formdata}} - {{item.endTime |formdata}}
                             </span>
@@ -104,6 +107,13 @@
 <script>
 import { getLiveItem, getClassItem, getChannelItem, clickItem } from '@/api.js'
 import voice from './voice.vue'
+const bgColors = [
+    {color:"#f8f8f8"},
+    {color:"#fac523"},
+    {color:"#99c45e"},
+    {color:"#78c2c4"},
+    {color:"#b473a2"},
+]
 const years = [
     {id:2017},
     {id:2016},
@@ -115,6 +125,7 @@ export default {
   },  
   data() {
     return {
+        bgColors:bgColors,
         showBtn:[true,false,false],
         yearBtn:false,
         monthBtn:false,
@@ -133,7 +144,7 @@ export default {
         wlItemList:[], //网络电台列表
         dsItemList:[], //地市台列表
         itemList:[], //节目列表
-        cid:1,
+        cid:1, //河南电台新闻广播cid
         player:null
     }
   },
@@ -165,23 +176,26 @@ export default {
             this.isPlayIndex()
             $('.listwrap').scrollTop(this.top);
         })
-        
     })
     this.dateSrc =(new Date()).getTime();
   },
   mounted(){
     // var player = videojs('example-video');
     // player.play();
+    
   },
   watch:{
     year(){
         $('.listwrap').scrollTop(0);
+        this.top = 0 ;
     },
     month(){
         $('.listwrap').scrollTop(0);
+        this.top = 0 ;
     },
     day(){
         $('.listwrap').scrollTop(0);
+        this.top = 0 ;
     }
   },
   computed:{
@@ -229,6 +243,9 @@ export default {
         })
         // this.dateSrc = datestamp * 1000;
         return datestamp;
+    },
+    listIndex() {
+        return this.top / 40
     }
   },
   methods:{
@@ -239,18 +256,20 @@ export default {
         event.preventDefault()
         let top = event.wheelDelta; 
         let len = this.itemList.length;
-        if(this.top < 0){
-            this.top = 0
-        }   
-        if(this.top > 40 * len){
-            this.top = 40 * len;
-        }       
+        var listWrap = $('.listwrap');
+        
         if(top > 0){
             this.top = this.top - 40;
         }else if(top < 0){
             this.top = this.top + 40;
-        }         
-        $('.listwrap').scrollTop(this.top);
+        }  
+        if(this.top < 0){
+            this.top = 0
+        }   
+        if(this.top >= 40 * len){
+            this.top = 40 * (len-1);
+        }              
+        listWrap.scrollTop(this.top);
     },
     selectYear(year){
         this.year = year + '年';
@@ -350,6 +369,12 @@ export default {
             return 
         }
     },
+    //设置背景色
+    setBgColor(color) {
+        $('.g-mnc').css('backgroundColor',color);
+        $('.item-hd').css('backgroundColor',color);
+        $('.item-ft').css('backgroundColor',color);
+    }
   }
 }
 </script>
@@ -375,12 +400,24 @@ body
     bottom 0
     left 0
     right 0
-    background #f8f8f8
+    // background #f8f8f8
     .g-logo
         position: absolute
         z-index: 5
         right 0
         top 40px
+    .g-bg-color
+        position: absolute
+        z-index: 5
+        right 14px
+        top 120px
+        .bg-item
+            display inline-block
+            width 18px
+            height 18px
+            border 1px solid #999
+            margin-right 6px
+            cursor pointer
     .g-sd
         position: fixed
         top 0 
@@ -425,7 +462,7 @@ body
                     &:hover
                         background #0080cc
                     &.isActive
-                        background #0080cc
+                        background #0080cc                    
     .g-mn
         width 100%
         height 100%
@@ -503,28 +540,31 @@ body
                                 width 70px   
                 .m-itemlist
                     position: relative
-                    width 382px
+                    width 395px
                     height 320px                
                     margin-top 40px
                     .item-hd
                         position: absolute
+                        z-index: 1
                         width 100%
                         height 40px
                         top 0
-                        background rgba(248, 248, 248, .8)
+                        opacity: 0.75
+                        background #f8f8f8
                     .item-ft
                         position: absolute
+                        z-index 1
                         width 100%
                         bottom 0
                         height 40px
-                        background rgba(248, 248, 248, .8)
+                        opacity 0.75
+                        background #f8f8f8
                     .item-middle
                         position: absolute
-                        // z-index -1
                         top 120px
                         width 100%
                         height 40px
-                        background #ffea02
+                        background #222
                     .listwrap
                         position: relative
                         width 100%
@@ -550,20 +590,27 @@ body
                                 .list-title
                                     display inline-block
                                     width 225px
-                                    // white-space nowrap
-                                    // overflow hidden
-                                    // text-overflow: ellipsis
+                                    white-space nowrap
+                                    overflow hidden
+                                    text-overflow: ellipsis
                                     text-align center
+                                    box-sizing border-box
+                                    padding 0 4px
+                                    vertical-align middle
                                 .play-icon
                                     display inline-block
-                                    width 30px
-                                    height 30px
-                                    margin-top 5px
-                                    vertical-align -10px
+                                    width 26px
+                                    height 26px
+                                    margin-top 8px
+                                    vertical-align -8px
                                     background url('./imgs/play.png') center center no-repeat
                                     background-size cover
+                                &.listIsActive
+                                    color #fff
+                                    font-size 18px
             .m-disc
                 position: absolute
+                z-index: 10
                 top 0 
                 bottom 0
                 left 7rem
@@ -579,10 +626,10 @@ body
                     background url('./imgs/shadow.png') center center no-repeat
                     background-size cover
                 .disc-wrap
-                    -webkit-animation rotate 6s linear infinite
-                    -moz-animation rotate 6s linear infinite
-                    -o-animation rotate 6s linear infinite
-                    animation rotate 6s linear infinite
+                    -webkit-animation rotate 12s linear infinite
+                    -moz-animation rotate 12s linear infinite
+                    -o-animation rotate 12s linear infinite
+                    animation rotate 12s linear infinite
                     width 6.22rem
                     height 6.22rem
                     line-height 6.22rem
@@ -600,7 +647,7 @@ body
                     width 1.47rem
                     height 3.41rem
                     transform-origin top right
-                    animation armrotate 20s linear infinite
+                    animation armrotate 24s linear infinite
                     background url('./imgs/tone-arm.png') center center no-repeat
                     background-size cover
     .g-play
