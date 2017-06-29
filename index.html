@@ -91,7 +91,9 @@
         }
         function playHandler(){
             CKobject.getObjectById('ck-video').removeListener('play','playHandler');
-            $('.loading').css('display','none')
+            setTimeout(function(){
+                $('.loading').css('display','none')
+            },1000)
         }
     </script> 
   </body>

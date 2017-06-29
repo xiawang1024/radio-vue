@@ -81,6 +81,9 @@
                 <img :src="imgSrc" alt="" class="disc-img">
             </div>
             <div class="disc-arm"></div>
+            <div class="playBtn">
+                
+            </div>
         </div>
       </div>
     </div>
@@ -615,8 +618,8 @@ body
                 z-index: 10
                 top 0 
                 bottom 0
-                left 7rem
-                height 7rem
+                left 6.22rem
+                height 6.22rem
                 margin auto 0
                 .disc-bg
                     position: absolute
