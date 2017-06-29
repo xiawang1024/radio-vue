@@ -291,6 +291,7 @@ export default {
     },
     //直播频道选择
     isActive(cid){
+        $('.loading').css('display','block')
         this.cid  = cid;
         this.year = new Date().getFullYear() + '年';
         this.month = new Date().getMonth() + 1 + '月';
@@ -355,6 +356,7 @@ export default {
     },
     //点播
     selectItem(index,playUrl,title,beginTime,endTime){
+        $('.loading').css('display','block')
         this.top = index * 40;
         // console.log(playUrl)
         $('.listwrap').scrollTop(this.top);
