@@ -89,12 +89,16 @@
     </div>
     <div class="g-play">
         <!-- <span class="m-voice"></span> -->
+        <!-- <vue-slider v-model="options.value" v-bind="options"></vue-slider> -->
         <wvoice></wvoice>
         <span class="m-time">
             {{dateSrc | formdate}}  {{timeSrc}}    
         </span>
         <span class="m-item" v-html="nameSrc">
         </span>
+        <div class="volume" @mouseenter="isShowSlide = true" @mouseleave="isShowSlide = false">
+            <vue-slider v-if="isShowSlide"  class="vo-slide" v-model="options.value" v-bind="options"></vue-slider>
+        </div>
     </div>
     <div class="audio">
        <!--  <video id=example-video width=600 height=300 class="video-js vjs-default-skin" controls>
@@ -110,6 +114,7 @@
 <script>
 import { getLiveItem, getClassItem, getChannelItem, clickItem } from '@/api.js'
 import voice from './voice.vue'
+import vueSlider from 'vue-slider-component';
 const bgColors = [
     {color:"#f8f8f8"},
     {color:"#fac523"},
@@ -124,7 +129,8 @@ const years = [
 export default {
   name: 'app',
   components:{
-    wvoice:voice
+    wvoice:voice,
+    vueSlider
   },  
   data() {
     return {
@@ -148,7 +154,43 @@ export default {
         dsItemList:[], //地市台列表
         itemList:[], //节目列表
         cid:1, //河南电台新闻广播cid
-        player:null
+        player:null,
+        isShowSlide:false,//是否显示音量组件
+        options:{
+            value: 80,// 值
+            width: 6,// 组件宽度
+            height: 120,// 组件高度
+            direction: "vertical",// 组件方向
+            dotSize: 18,// 滑块大小
+            eventType: "auto",// 事件类型
+            min: 0,// 最小值
+            max: 100,// 最大值
+            interval: 1,// 分段间隔
+            disabled: false,// 是否不可用
+            show: true,// 是否显示组件
+            realTime: false,// 是否实时计算组件布局
+            tooltip: "always",// 是否显示工具提示
+            clickable: true,// 是否可点击的
+            tooltipDir: "top",// 工具提示方向
+            piecewise: false,// 是否显示分段样式
+            lazy: false,// 是否在拖拽结束后同步值
+            reverse: false,// 是否反向组件
+            speed: 0.5,// 动画速度
+            formatter: null,// 格式化tooltip的值
+            bgStyle: {
+                backgroundColor:'#333'
+            },// 组件背景样式
+            sliderStyle: {
+                backgroundColor:'#222'
+            },// 滑块样式
+            tooltipStyle: {
+                backgroundColor:'#0080cc'
+            },// 工具提示样式
+            processStyle: {
+                backgroundColor:'#0080cc'
+            },// 进度条样式
+            piecewiseStyle: null,// 分割点的样式
+        }
     }
   },
   created(){
@@ -199,6 +241,12 @@ export default {
     day(){
         $('.listwrap').scrollTop(0);
         this.top = 0 ;
+    },
+    options:{
+        handler:function(){
+            CKobject.getObjectById('ck-video').changeVolume(this.options.value)
+        },
+        deep: true
     }
   },
   computed:{
@@ -359,11 +407,11 @@ export default {
     },
     //点播
     selectItem(index,playUrl,title,beginTime,endTime){
-        $('.loading').css('display','block')
         this.top = index * 40;
         // console.log(playUrl)
         $('.listwrap').scrollTop(this.top);
         if(playUrl && playUrl.length > 0){
+            $('.loading').css('display','block')
             this.audioSrc = playUrl[0];
             this.nameSrc = title;
             this.dateSrc = this.stamp * 1000;
@@ -658,7 +706,7 @@ body
     .g-play
         position: absolute
         z-index: 5
-        right 40px
+        right 80px
         bottom 40px
         min-width 200px
         .m-voice
@@ -677,6 +725,19 @@ body
             font-size 16px
             background #333
             color #fff
+        .volume
+            position: absolute
+            right -50px
+            bottom -12px
+            width 46px
+            height 50px
+            background url('./imgs/volume.png') center bottom no-repeat
+            background-size 46px 46px
+            cursor: pointer
+            .vo-slide
+                position: absolute
+                bottom 40px
+                left 10px
     .audio
         display none
 </style>
