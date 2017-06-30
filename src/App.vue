@@ -38,13 +38,6 @@
     <div class="g-mn">
       <div class="g-mnc clearfix">
         <div class="m-daylist" >
-            <div class="liveItemInfo">
-                <div class="m-txt">正在播放</div>
-                <span class="m-time">
-                    {{dateSrc | formdate}}  {{timeSrc}}    
-                </span>
-                <span class="m-item" v-html="nameSrc"></span>
-            </div>
             <div class="m-datepick clearfix" v-show="itemList.length > 0">
                 <div class="item"  @mouseenter="yearBtn = true" @mouseleave="yearBtn = false">
                     <input class="ipt" type="text" readonly name="" value="2017年" v-model="year" ><span class="select"><i class="white icon-down"></i></span>
@@ -81,6 +74,15 @@
                     </ul>
                 </div>
             </div>
+            <div class="liveItemInfo">
+                <div class="m-txt">
+                    <span class="lising">正在收听</span>
+                    <span class="m-time">
+                        {{dateSrc | formdate}}  {{timeSrc}}    
+                    </span>
+                </div>                
+                <span class="m-item" v-html="nameSrc"></span>
+            </div>
         </div>
         <div class="m-disc">
             <div class="disc-bg"></div>
@@ -98,11 +100,11 @@
         <!-- <span class="m-voice"></span> -->
         <!-- <vue-slider v-model="options.value" v-bind="options"></vue-slider> -->
         <wvoice></wvoice>
-        <span class="m-time">
+        <!-- <span class="m-time">
             {{dateSrc | formdate}}  {{timeSrc}}    
         </span>
         <span class="m-item" v-html="nameSrc">
-        </span>
+        </span> -->
         <div class="volume" @mouseenter="isShowSlide = true" @mouseleave="isShowSlide = false">
             <vue-slider v-if="isShowSlide"  class="vo-slide" v-model="options.value" v-bind="options"></vue-slider>
         </div>
@@ -166,8 +168,8 @@ export default {
         isShowSlide:false,//是否显示音量组件
         options:{
             value: 80,// 值
-            width: 6,// 组件宽度
-            height: 120,// 组件高度
+            width: 4,// 组件宽度
+            height: 150,// 组件高度
             direction: "vertical",// 组件方向
             dotSize: 18,// 滑块大小
             eventType: "auto",// 事件类型
@@ -186,16 +188,16 @@ export default {
             speed: 0.5,// 动画速度
             formatter: null,// 格式化tooltip的值
             bgStyle: {
-                backgroundColor:'#333'
+                backgroundColor:'#ccc'
             },// 组件背景样式
             sliderStyle: {
-                backgroundColor:'#222'
+                backgroundColor:'#1ba2ff'
             },// 滑块样式
             tooltipStyle: {
-                backgroundColor:'#0080cc'
+                backgroundColor:'#1ba2ff'
             },// 工具提示样式
             processStyle: {
-                backgroundColor:'#0080cc'
+                backgroundColor:'#1ba2ff'
             },// 进度条样式
             piecewiseStyle: null,// 分割点的样式
         }
@@ -412,7 +414,7 @@ export default {
                 index = i;
                 this.activeItemIndex = i;
                 this.top = index * 40;
-                console.log(this.top)
+                // console.log(this.top)
                 return;
             }
         }
@@ -553,22 +555,29 @@ body
                 width 450px
                 height 480px
                 .liveItemInfo
-                    margin-top 0 
+                    margin-top 40px
                     .m-txt
-                        font-size 20px
-                        margin-bottom 20px
-                    .m-time
-                        // margin-left 10px
-                        font-size 15px
-                        color #666
-                    .m-item
-                        margin-left 10px
-                        padding 6px 10px
                         font-size 16px
-                        background #333
-                        color #fff
+                        margin-bottom 10px
+                        .lising
+                            color #fff
+                            padding 4px 12px
+                            border-radius 20px
+                            background #1ba2ff
+                    .m-time
+                        margin-left 10px
+                        font-size 15px
+                        color #000
+                    .m-item
+                        margin-left 100px
+                        // padding 6px 10px
+                        font-size 16px
+                        color #000
+                        font-weight 500
+                        // background #333
+                        // color #fff
                 .m-datepick
-                    margin-top 30px
+                    margin-top 0px
                     .item
                         position: relative
                         z-index 10
@@ -743,7 +752,7 @@ body
         z-index: 5
         right 80px
         bottom 40px
-        min-width 200px
+        // min-width 200px
         .m-voice
             display inline-block
             width 27px
@@ -763,15 +772,15 @@ body
         .volume
             position: absolute
             right -50px
-            bottom -12px
+            bottom -4px
             width 46px
             height 50px
             background url('./imgs/volume.png') center bottom no-repeat
-            background-size 46px 46px
+            background-size 30px 30px
             cursor: pointer
             .vo-slide
                 position: absolute
-                bottom 40px
+                bottom 28px
                 left 10px
     .audio
         display none

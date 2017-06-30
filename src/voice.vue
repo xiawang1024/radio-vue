@@ -61,7 +61,7 @@ export default {
             transform: scaley(1); } }
 
 .line-scale-pulse-out-rapid > div {
-  background-color: #0080cc;
+  background-color: #1ba2ff;
   width: 4px;
   height: 50px;
   border-radius: 2px;
