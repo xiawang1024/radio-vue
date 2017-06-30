@@ -38,6 +38,13 @@
     <div class="g-mn">
       <div class="g-mnc clearfix">
         <div class="m-daylist" >
+            <div class="liveItemInfo">
+                <div class="m-txt">正在播放</div>
+                <span class="m-time">
+                    {{dateSrc | formdate}}  {{timeSrc}}    
+                </span>
+                <span class="m-item" v-html="nameSrc"></span>
+            </div>
             <div class="m-datepick clearfix" v-show="itemList.length > 0">
                 <div class="item"  @mouseenter="yearBtn = true" @mouseleave="yearBtn = false">
                     <input class="ipt" type="text" readonly name="" value="2017年" v-model="year" ><span class="select"><i class="white icon-down"></i></span>
@@ -61,10 +68,10 @@
             <div class="m-itemlist" v-show="itemList.length > 0">
                 <div class="item-hd"></div>
                 <div class="item-ft"></div>
-                <div class="item-middle"></div>
+                <!-- <div class="item-middle"></div> -->
                 <div class="listwrap">
                     <ul @mousewheel='scrollTo($event)'>
-                        <li class="list-item" :class="{listIsActive : listIndex == index ? true : false}" v-for="(item,index) of itemList" @click="selectItem(index,item.playUrl,item.title,item.beginTime,item.endTime)">
+                        <li class="list-item" :class="{listIsActive : activeItemIndex == index ? true : false}" v-for="(item,index) of itemList" @click="selectItem(index,item.playUrl,item.title,item.beginTime,item.endTime)">
                             <span class="list-time">
                                 {{item.beginTime |formdata}} - {{item.endTime |formdata}}
                             </span>
@@ -155,6 +162,7 @@ export default {
         itemList:[], //节目列表
         cid:1, //河南电台新闻广播cid
         player:null,
+        activeItemIndex:0,//点击节目索引
         isShowSlide:false,//是否显示音量组件
         options:{
             value: 80,// 值
@@ -219,7 +227,7 @@ export default {
         showPlayer(this.audioSrc)
         this.$nextTick(() => {
             this.isPlayIndex()
-            $('.listwrap').scrollTop(this.top);
+            $('.listwrap').scrollTop(this.top - 120);
         })
     })
     this.dateSrc =(new Date()).getTime();
@@ -296,7 +304,7 @@ export default {
         return datestamp;
     },
     listIndex() {
-        return this.top / 40
+        return this.top / 40 
     }
   },
   methods:{
@@ -317,9 +325,10 @@ export default {
         if(this.top < 0){
             this.top = 0
         }   
-        if(this.top >= 40 * len){
-            this.top = 40 * (len-1);
-        }              
+        if(this.top >= 40 * (len - 8)){
+            this.top = 40 * (len - 8 ) ;
+        }
+        console.log(len ,this.top)              
         listWrap.scrollTop(this.top);
     },
     selectYear(year){
@@ -342,7 +351,8 @@ export default {
     },
     //直播频道选择
     isActive(cid){
-        $('.loading').css('display','block')
+        $('.loading').css('display','block');
+        this.options.value = 80;
         this.cid  = cid;
         this.year = new Date().getFullYear() + '年';
         this.month = new Date().getMonth() + 1 + '月';
@@ -363,7 +373,7 @@ export default {
             this.$nextTick(() => {
                 this.top = 0;
                 this.isPlayIndex()
-                $('.listwrap').scrollTop(this.top);
+                $('.listwrap').scrollTop(this.top - 120);
             })            
         })
     },
@@ -400,18 +410,22 @@ export default {
             let item = data[i];
             if(item.beginTime < time && item.endTime > time){
                 index = i;
+                this.activeItemIndex = i;
                 this.top = index * 40;
+                console.log(this.top)
                 return;
             }
         }
     },
     //点播
     selectItem(index,playUrl,title,beginTime,endTime){
+        this.activeItemIndex = index; 
         this.top = index * 40;
         // console.log(playUrl)
-        $('.listwrap').scrollTop(this.top);
+        $('.listwrap').scrollTop(this.top - 120);
         if(playUrl && playUrl.length > 0){
-            $('.loading').css('display','block')
+            $('.loading').css('display','block');
+            this.options.value = 80;
             this.audioSrc = playUrl[0];
             this.nameSrc = title;
             this.dateSrc = this.stamp * 1000;
@@ -537,8 +551,24 @@ body
                 bottom 0
                 margin auto 0
                 width 450px
-                height 400px
+                height 480px
+                .liveItemInfo
+                    margin-top 0 
+                    .m-txt
+                        font-size 20px
+                        margin-bottom 20px
+                    .m-time
+                        // margin-left 10px
+                        font-size 15px
+                        color #666
+                    .m-item
+                        margin-left 10px
+                        padding 6px 10px
+                        font-size 16px
+                        background #333
+                        color #fff
                 .m-datepick
+                    margin-top 30px
                     .item
                         position: relative
                         z-index 10
@@ -598,7 +628,7 @@ body
                     margin-top 40px
                     .item-hd
                         position: absolute
-                        z-index: 1
+                        // z-index: 1
                         width 100%
                         height 40px
                         top 0
@@ -606,7 +636,7 @@ body
                         background #f8f8f8
                     .item-ft
                         position: absolute
-                        z-index 1
+                        // z-index 1
                         width 100%
                         bottom 0
                         height 40px
@@ -620,12 +650,14 @@ body
                         background #222
                     .listwrap
                         position: relative
+                        z-index: 1
                         width 100%
                         height 320px
                         overflow-y auto
                         overflow-x hidden
+                        box-sizing border-box
                         ul
-                            padding 120px 0 160px
+                            // padding 120px 0 160px
                             .list-item
                                 width 380px
                                 height 40px
@@ -636,6 +668,8 @@ body
                                 color #333
                                 cursor: pointer
                                 overflow hidden
+                                &:hover
+                                    background rgba(0, 0, 0, .05)
                                 .list-time
                                     display inline-block
                                     width 110px
@@ -661,6 +695,7 @@ body
                                 &.listIsActive
                                     color #fff
                                     font-size 18px
+                                    background #333
             .m-disc
                 position: absolute
                 z-index: 10
