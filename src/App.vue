@@ -102,9 +102,11 @@
         <wvoice></wvoice>
         <!-- <span class="m-time">
             {{dateSrc | formdate}}  {{timeSrc}}    
-        </span>
-        <span class="m-item" v-html="nameSrc">
         </span> -->
+        <span class="m-time playWrap" @click="playOrPause">
+            <i v-if="isPlay" class="icon-playBtn" title="播放"></i>
+            <i v-else class="icon-pauseBtn" title="暂停"></i>
+        </span>
         <div class="volume" @mouseenter="isShowSlide = true" @mouseleave="isShowSlide = false">
             <vue-slider v-if="isShowSlide"  class="vo-slide" v-model="options.value" v-bind="options"></vue-slider>
         </div>
@@ -124,12 +126,21 @@
 import { getLiveItem, getClassItem, getChannelItem, clickItem } from '@/api.js'
 import voice from './voice.vue'
 import vueSlider from 'vue-slider-component';
+// 旧背景颜色
+// const bgColors = [
+//     {color:"#f8f8f8"},
+//     {color:"#fac523"},
+//     {color:"#99c45e"},
+//     {color:"#78c2c4"},
+//     {color:"#b473a2"},
+// ]
+// 新背景颜色
 const bgColors = [
     {color:"#f8f8f8"},
-    {color:"#fac523"},
-    {color:"#99c45e"},
-    {color:"#78c2c4"},
-    {color:"#b473a2"},
+    {color:"#d2e7b9"},
+    {color:"#b9e7db"},
+    {color:"#b9d1e7"},
+    {color:"#e7b9df"},
 ]
 const years = [
     {id:2017},
@@ -166,6 +177,7 @@ export default {
         player:null,
         activeItemIndex:0,//点击节目索引
         isShowSlide:false,//是否显示音量组件
+        isPlay:true, // 正在播放
         options:{
             value: 80,// 值
             width: 4,// 组件宽度
@@ -443,6 +455,16 @@ export default {
         $('.g-mnc').css('backgroundColor',color);
         $('.item-hd').css('backgroundColor',color);
         $('.item-ft').css('backgroundColor',color);
+    },
+    //播放与暂停
+    playOrPause () {
+        if(this.isPlay){
+            this.isPlay = false;
+            CKobject.getObjectById('ck-video').videoPause();
+        }else{
+            this.isPlay = true;
+            CKobject.getObjectById('ck-video').videoPlay();
+        }
     }
   }
 }
@@ -763,6 +785,11 @@ body
             margin-left 10px
             font-size 14px
             color #666
+            .icon-playBtn,.icon-pauseBtn
+                font-size 30px
+                color #1ba2ff
+                margin 0 8px
+                cursor: pointer
         .m-item
             margin-left 10px
             padding 6px 10px
