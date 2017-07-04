@@ -86,10 +86,10 @@
         </div>
         <div class="m-disc">
             <div class="disc-bg"></div>
-            <div class="disc-wrap">
+            <div class="disc-wrap" :class="isPlay ? 'isPlay' : ''">
                 <img :src="imgSrc" alt="" class="disc-img">
             </div>
-            <div class="disc-arm"></div>
+            <div class="disc-arm" :class="!isPlay ? 'isPaused' : ''"></div>
             <div class="playBtn">
                 
             </div>
@@ -99,7 +99,7 @@
     <div class="g-play">
         <!-- <span class="m-voice"></span> -->
         <!-- <vue-slider v-model="options.value" v-bind="options"></vue-slider> -->
-        <wvoice></wvoice>
+        <wvoice v-show="isPlay"></wvoice>
         <!-- <span class="m-time">
             {{dateSrc | formdate}}  {{timeSrc}}    
         </span> -->
@@ -480,9 +480,9 @@ export default {
     0%
         transform rotate(0deg)
     50%
-        transform rotate(-9deg)
+        transform rotate(-10deg)
     100%
-        transform rotate(0deg)
+        transform rotate(-20deg)
 body
     background #f8f8f8
 #app
@@ -745,16 +745,17 @@ body
                     background url('./imgs/shadow.png') center center no-repeat
                     background-size cover
                 .disc-wrap
-                    -webkit-animation rotate 12s linear infinite
-                    -moz-animation rotate 12s linear infinite
-                    -o-animation rotate 12s linear infinite
-                    animation rotate 12s linear infinite
                     width 6.22rem
                     height 6.22rem
                     line-height 6.22rem
                     text-align center
                     background url('./imgs/disc.png') center center no-repeat
                     background-size cover
+                    &.isPlay
+                        -webkit-animation rotate 12s linear infinite
+                        -moz-animation rotate 12s linear infinite
+                        -o-animation rotate 12s linear infinite
+                        animation rotate 12s linear infinite
                     .disc-img
                         vertical-align middle
                         width 2.35rem
@@ -766,9 +767,12 @@ body
                     width 1.47rem
                     height 3.41rem
                     transform-origin top right
-                    animation armrotate 24s linear infinite
+                    transform rotate(-4deg)
+                    // animation armrotate 1s linear                     
                     background url('./imgs/tone-arm.png') center center no-repeat
                     background-size cover
+                    &.isPaused
+                        transform rotate(-20deg)
     .g-play
         position: absolute
         z-index: 5
