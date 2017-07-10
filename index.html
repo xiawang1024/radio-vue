@@ -71,6 +71,7 @@
     <script type="text/javascript" src="./static/videojs-contrib-hls.js"></script> -->
     <!-- flash 播放 -->
     <script type="text/javascript">
+        var currentTime, totalTime;
         function showPlayer(src) {
             //player
             var flashvars = {
@@ -80,7 +81,7 @@
                 s: 4,
                 p: 1,
                 loaded:'loadedHandler',
-                lv: 1,//注意，如果是直播，需设置lv:1
+                // lv: 1,//注意，如果是直播，需设置lv:1
             };
             var video = [src];
             CKobject.embed('static/ckplayer/ckplayer.swf', 'liveWrap', 'ck-video', '0', "0", false, flashvars, video);
@@ -88,6 +89,8 @@
         }
         function loadedHandler(){
             CKobject.getObjectById('ck-video').addListener('play','playHandler');
+            CKobject.getObjectById('ck-video').addListener('time','timeHandler');
+            CKobject.getObjectById('ck-video').addListener('totaltime','totaltimeHandler');
         }
         function playHandler(){
             CKobject.getObjectById('ck-video').removeListener('play','playHandler');
@@ -95,6 +98,21 @@
             setTimeout(function(){
                 $('.loading').css('display','none')
             },1000)
+        }
+        function setSeek(time){
+            CKobject.getObjectById('ck-video').videoSeek(time)
+        }
+        function timeHandler(time){
+            currentTime = (time)
+        }
+        function totaltimeHandler(totaltime){
+            totalTime = (totaltime)
+        }
+        function _currenttime(){
+            return currentTime;
+        }
+        function _totaltime(){
+            return (totalTime)
         }
     </script> 
   </body>

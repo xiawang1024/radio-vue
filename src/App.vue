@@ -99,16 +99,22 @@
     <div class="g-play">
         <!-- <span class="m-voice"></span> -->
         <!-- <vue-slider v-model="options.value" v-bind="options"></vue-slider> -->
-        <wvoice v-show="isPlay"></wvoice>
+        <!-- <wvoice v-show="isPlay"></wvoice> -->
         <!-- <span class="m-time">
             {{dateSrc | formdate}}  {{timeSrc}}    
         </span> -->
         <span class="m-time playWrap" @click="playOrPause">
-            <i v-if="isPlay" class="icon-playBtn" title="播放"></i>
-            <i v-else class="icon-pauseBtn" title="暂停"></i>
+            <i v-if="isPlay" class="iconBtn iconPlay" title="播放"></i>
+            <i v-else class="iconBtn iconPaused" title="暂停"></i>
         </span>
+        <div class="progress" v-if="totalTime > 60">
+            <vue-slider @drag-end="setSeek" class="vo-slide" v-model="progressoptions.value" v-bind="progressoptions"></vue-slider>
+            <span class="currentTime">{{format(currentTime)}}</span>
+            <span class="totalTime">{{format(totalTime)}}</span>
+            <!-- <span>{{percent}}</span> -->
+        </div>
         <div class="volume" @mouseenter="isShowSlide = true" @mouseleave="isShowSlide = false">
-            <vue-slider v-if="isShowSlide"  class="vo-slide" v-model="options.value" v-bind="options"></vue-slider>
+            <vue-slider   class="vo-slide" v-model="options.value" v-bind="options"></vue-slider>
         </div>
     </div>
     <div class="audio">
@@ -178,10 +184,12 @@ export default {
         activeItemIndex:0,//点击节目索引
         isShowSlide:false,//是否显示音量组件
         isPlay:true, // 正在播放
+        currentTime:0,//当前播放时间
+        totalTime:0,//总播放时间
         options:{
             value: 80,// 值
             width: 4,// 组件宽度
-            height: 150,// 组件高度
+            height: 80,// 组件高度
             direction: "vertical",// 组件方向
             dotSize: 18,// 滑块大小
             eventType: "auto",// 事件类型
@@ -193,6 +201,48 @@ export default {
             realTime: false,// 是否实时计算组件布局
             tooltip: "always",// 是否显示工具提示
             clickable: true,// 是否可点击的
+            tooltipDir: "right",// 工具提示方向
+            piecewise: false,// 是否显示分段样式
+            lazy: false,// 是否在拖拽结束后同步值
+            reverse: false,// 是否反向组件
+            speed: 0.5,// 动画速度
+            formatter: null,// 格式化tooltip的值
+            bgStyle: {
+                backgroundColor:'#9ca3a8'
+            },// 组件背景样式
+            sliderStyle: {
+                // backgroundColor:'#1ba2ff',
+                width:'30px',
+                height:'15px',
+                borderRadius:'0',
+                background: '-webkit-linear-gradient(#474945, #050505)', /* Safari 5.1 - 6.0 */
+                background: '-o-linear-gradient(#474945, #050505)', /* Opera 11.1 - 12.0 */
+                background: '-moz-linear-gradient(#474945, #050505)', /* Firefox 3.6 - 15 */
+                background: 'linear-gradient(#474945, #050505)' 
+            },// 滑块样式
+            tooltipStyle: {
+                backgroundColor:'#1ba2ff'
+            },// 工具提示样式
+            processStyle: {
+                backgroundColor:'#00b6d3'
+            },// 进度条样式
+            piecewiseStyle: null,// 分割点的样式
+        },
+        progressoptions:{
+            value: 0,// 值
+            width: 300,// 组件宽度
+            height: 4,// 组件高度
+            direction: "horizontal",// 组件方向
+            dotSize: 18,// 滑块大小
+            eventType: "auto",// 事件类型
+            min: 0,// 最小值
+            max: 100,// 最大值
+            interval: 1,// 分段间隔
+            disabled: false,// 是否不可用
+            show: true,// 是否显示组件
+            realTime: false,// 是否实时计算组件布局
+            tooltip: "no",// 是否显示工具提示
+            clickable: true,// 是否可点击的
             tooltipDir: "top",// 工具提示方向
             piecewise: false,// 是否显示分段样式
             lazy: false,// 是否在拖拽结束后同步值
@@ -200,16 +250,16 @@ export default {
             speed: 0.5,// 动画速度
             formatter: null,// 格式化tooltip的值
             bgStyle: {
-                backgroundColor:'#ccc'
+                backgroundColor:'#9ca3a8'
             },// 组件背景样式
             sliderStyle: {
-                backgroundColor:'#1ba2ff'
+                backgroundColor:'#f1ede3'
             },// 滑块样式
             tooltipStyle: {
                 backgroundColor:'#1ba2ff'
             },// 工具提示样式
             processStyle: {
-                backgroundColor:'#1ba2ff'
+                backgroundColor:'#00b6d3'
             },// 进度条样式
             piecewiseStyle: null,// 分割点的样式
         }
@@ -249,7 +299,14 @@ export default {
   mounted(){
     // var player = videojs('example-video');
     // player.play();
-    
+    // this.currentTime = timeHandler()
+    var _this = this;
+    // loadedHandler()
+    setInterval(function(){
+        _this.currentTime = _currenttime()
+        _this.totalTime = _totaltime()
+    },1000)
+
   },
   watch:{
     year(){
@@ -269,6 +326,11 @@ export default {
             CKobject.getObjectById('ck-video').changeVolume(this.options.value)
         },
         deep: true
+    },
+    currentTime(){
+        let per = this.currentTime / this.totalTime;
+        this.progressoptions.value = per * 100
+        this.$set(this.progressoptions,'value',per * 100)
     }
   },
   computed:{
@@ -319,7 +381,7 @@ export default {
     },
     listIndex() {
         return this.top / 40 
-    }
+    },
   },
   methods:{
     slideList(index) {
@@ -465,6 +527,31 @@ export default {
             this.isPlay = true;
             CKobject.getObjectById('ck-video').videoPlay();
         }
+    },
+    format(interval) {
+        interval = interval | 0
+        const hour = interval / 3600 | 0
+        const minute = this._pad(interval / 60 % 60 | 0)
+        const second = this._pad(interval % 60)
+        if(hour > 0){
+           return `${hour}:${minute}:${second}` 
+       }else{
+           return `${minute}:${second}`
+       }
+    },
+    _pad(num, n = 2) {
+        let len = num.toString().length
+        while (len < n) {
+          num = '0' + num
+          len++
+        }
+        return num
+    },
+    setSeek(e){
+        
+        let per = this.progressoptions.value / 100
+        console.log(this.totalTime * per)
+        setSeek(parseInt(this.totalTime * per))
     }
   }
 }
@@ -485,6 +572,19 @@ export default {
         transform rotate(-20deg)
 body
     background #f8f8f8
+.playWrap
+    display inline-block
+    overflow hidden
+    .iconBtn
+        display inline-block
+        width 69px
+        height 69px
+        &.iconPaused 
+            background url('./imgs/playBtn.png') center center no-repeat
+            background-size cover
+        &.iconPlay
+            background url('./imgs/pausedBtn.png') center center no-repeat
+            background-size cover
 #app
     position: absolute
     top 0
@@ -567,7 +667,7 @@ body
             min-width 1080px           
             background url('./imgs/bg.png') center center no-repeat
             backgorund-size cover
-            background-color #f8f8f8
+            background-color #b9e7db
             .m-daylist
                 position: absolute
                 left 100px
@@ -664,7 +764,7 @@ body
                         height 40px
                         top 0
                         opacity: 0.75
-                        background #f8f8f8
+                        background #b9e7db
                     .item-ft
                         position: absolute
                         // z-index 1
@@ -672,7 +772,7 @@ body
                         bottom 0
                         height 40px
                         opacity 0.75
-                        background #f8f8f8
+                        background #b9e7db
                     .item-middle
                         position: absolute
                         top 120px
@@ -766,7 +866,7 @@ body
                     right -0.48rem
                     width 1.47rem
                     height 3.41rem
-                    transform-origin top right
+                    transform-origin  center top 
                     transform rotate(-4deg)
                     // animation armrotate 1s linear                     
                     background url('./imgs/tone-arm.png') center center no-repeat
@@ -776,9 +876,10 @@ body
     .g-play
         position: absolute
         z-index: 5
-        right 80px
+        left 50%
         bottom 40px
-        // min-width 200px
+        // min-width 400px
+        transform translateX(-50%)
         .m-voice
             display inline-block
             width 27px
@@ -786,9 +887,12 @@ body
             background url('./imgs/voice.png') center center no-repeat
             background-size cover
         .m-time
+            float left
             margin-left 10px
             font-size 14px
             color #666
+            cursor: pointer
+            margin-right 30px
             .icon-playBtn,.icon-pauseBtn
                 font-size 30px
                 color #1ba2ff
@@ -803,7 +907,7 @@ body
         .volume
             position: absolute
             right -50px
-            bottom -4px
+            bottom 25px
             width 46px
             height 50px
             background url('./imgs/volume.png') center bottom no-repeat
@@ -813,6 +917,20 @@ body
                 position: absolute
                 bottom 28px
                 left 10px
+        .progress
+            float left
+            width 300px
+            position: relative
+            top 20px
+            margin-left 10px
+            .currentTime
+                position: absolute
+                left 0
+                bottom -20px
+            .totalTime
+                position: absolute
+                right 0
+                bottom -20px
     .audio
         display none
 </style>
