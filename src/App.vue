@@ -35,6 +35,27 @@
           </ul>
       </div>
     </div>
+    <div class="g-play">
+        <!-- <span class="m-voice"></span> -->
+        <!-- <vue-slider v-model="options.value" v-bind="options"></vue-slider> -->
+        <!-- <wvoice v-show="isPlay"></wvoice> -->
+        <!-- <span class="m-time">
+            {{dateSrc | formdate}}  {{timeSrc}}    
+        </span> -->
+        <span class="m-time playWrap" @click="playOrPause">
+            <i v-if="isPlay" class="iconBtn iconPlay" title="播放"></i>
+            <i v-else class="iconBtn iconPaused" title="暂停"></i>
+        </span>
+        <div class="progress" v-if="totalTime > 100">
+            <vue-slider @drag-end="setSeek" class="vo-slide" v-model="progressoptions.value" v-bind="progressoptions"></vue-slider>
+            <span class="currentTime">{{format(currentTime)}}</span>
+            <span class="totalTime">{{format(totalTime)}}</span>
+            <!-- <span>{{percent}}</span> -->
+        </div>
+        <div class="volume"  @mouseenter="isShowSlide = true" @mouseleave="isShowSlide = false">
+            <vue-slider v-if="isShowSlide"  class="vo-slide" v-model="options.value" v-bind="options"></vue-slider>
+        </div>
+    </div>
     <div class="g-mn">
       <div class="g-mnc clearfix">
         <div class="m-daylist" >
@@ -96,27 +117,7 @@
         </div>
       </div>
     </div>
-    <div class="g-play">
-        <!-- <span class="m-voice"></span> -->
-        <!-- <vue-slider v-model="options.value" v-bind="options"></vue-slider> -->
-        <!-- <wvoice v-show="isPlay"></wvoice> -->
-        <!-- <span class="m-time">
-            {{dateSrc | formdate}}  {{timeSrc}}    
-        </span> -->
-        <span class="m-time playWrap" @click="playOrPause">
-            <i v-if="isPlay" class="iconBtn iconPlay" title="播放"></i>
-            <i v-else class="iconBtn iconPaused" title="暂停"></i>
-        </span>
-        <div class="progress" v-if="totalTime > 60">
-            <vue-slider @drag-end="setSeek" class="vo-slide" v-model="progressoptions.value" v-bind="progressoptions"></vue-slider>
-            <span class="currentTime">{{format(currentTime)}}</span>
-            <span class="totalTime">{{format(totalTime)}}</span>
-            <!-- <span>{{percent}}</span> -->
-        </div>
-        <div class="volume" @mouseenter="isShowSlide = true" @mouseleave="isShowSlide = false">
-            <vue-slider   class="vo-slide" v-model="options.value" v-bind="options"></vue-slider>
-        </div>
-    </div>
+    
     <div class="audio">
        <!--  <video id=example-video width=600 height=300 class="video-js vjs-default-skin" controls>
           <source
@@ -189,9 +190,9 @@ export default {
         options:{
             value: 80,// 值
             width: 4,// 组件宽度
-            height: 80,// 组件高度
+            height: 100,// 组件高度
             direction: "vertical",// 组件方向
-            dotSize: 18,// 滑块大小
+            dotSize: 14,// 滑块大小
             eventType: "auto",// 事件类型
             min: 0,// 最小值
             max: 100,// 最大值
@@ -212,19 +213,17 @@ export default {
             },// 组件背景样式
             sliderStyle: {
                 // backgroundColor:'#1ba2ff',
-                width:'30px',
-                height:'15px',
-                borderRadius:'0',
-                background: '-webkit-linear-gradient(#474945, #050505)', /* Safari 5.1 - 6.0 */
-                background: '-o-linear-gradient(#474945, #050505)', /* Opera 11.1 - 12.0 */
-                background: '-moz-linear-gradient(#474945, #050505)', /* Firefox 3.6 - 15 */
-                background: 'linear-gradient(#474945, #050505)' 
+                'width':'30px',
+                height:'20px',
+                borderRadius:'4px',
+                background:'#dadbdc',
             },// 滑块样式
             tooltipStyle: {
                 backgroundColor:'#1ba2ff'
             },// 工具提示样式
             processStyle: {
-                backgroundColor:'#00b6d3'
+                // backgroundColor:'#00b6d3',
+                'backgroundImage': '-webkit-linear-gradient(top , #0bbed7, #0082cc)', /* Safari 5.1 - 6.0 */
             },// 进度条样式
             piecewiseStyle: null,// 分割点的样式
         },
@@ -247,14 +246,13 @@ export default {
             piecewise: false,// 是否显示分段样式
             lazy: false,// 是否在拖拽结束后同步值
             reverse: false,// 是否反向组件
+            class: "progress-slider",
             speed: 0.5,// 动画速度
             formatter: null,// 格式化tooltip的值
             bgStyle: {
                 backgroundColor:'#9ca3a8'
             },// 组件背景样式
-            sliderStyle: {
-                backgroundColor:'#f1ede3'
-            },// 滑块样式
+            
             tooltipStyle: {
                 backgroundColor:'#1ba2ff'
             },// 工具提示样式
@@ -572,13 +570,20 @@ export default {
         transform rotate(-20deg)
 body
     background #f8f8f8
+.progress-slider .vue-slider-always.vue-slider-dot
+    background:url('./imgs/slideBar.png') no-repeat
+.vue-slider-always.vue-slider-dot
+    width 60px
+    height 60px
+    background url('./imgs/slideBar.png') center center no-repeat
+    background-size cover
 .playWrap
     display inline-block
     overflow hidden
     .iconBtn
         display inline-block
-        width 69px
-        height 69px
+        width 89px
+        height 95px
         &.iconPaused 
             background url('./imgs/playBtn.png') center center no-repeat
             background-size cover
@@ -875,7 +880,7 @@ body
                         transform rotate(-20deg)
     .g-play
         position: absolute
-        z-index: 5
+        z-index: 50
         left 50%
         bottom 40px
         // min-width 400px
@@ -892,7 +897,7 @@ body
             font-size 14px
             color #666
             cursor: pointer
-            margin-right 30px
+            margin-right 20px
             .icon-playBtn,.icon-pauseBtn
                 font-size 30px
                 color #1ba2ff
@@ -907,22 +912,23 @@ body
         .volume
             position: absolute
             right -50px
-            bottom 25px
-            width 46px
-            height 50px
+            bottom 16px
+            width 67px
+            height 72px
             background url('./imgs/volume.png') center bottom no-repeat
-            background-size 30px 30px
+            background-size cover
             cursor: pointer
             .vo-slide
                 position: absolute
-                bottom 28px
-                left 10px
+                bottom 50px
+                left 24px
         .progress
             float left
             width 300px
             position: relative
-            top 20px
-            margin-left 10px
+            top 35px
+            margin-left 0px
+            margin-right 30px
             .currentTime
                 position: absolute
                 left 0

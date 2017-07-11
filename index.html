@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html style="font-size:100px">
-  <head>
-    <meta charset="utf-8">
+
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
     <meta name="renderer" content="webkit">
     <link rel="shortcut icon" href="./static/favicon.ico" type="image/x-icon">
     <title>河南广播网</title>
@@ -13,37 +14,38 @@
     <link rel="stylesheet" type="text/css" href="./static/font/style.css">
     <script type="text/javascript" src=./static/zepto.js></script>
     <script type="text/javascript">
-        $(function(){
-            // console.log($(window).width())
-            var width = $(window).width();
-            var ratio = null;
-            if(width >= 1080){
-                if(width >= 1800){
+    $(function() {
+        // console.log($(window).width())
+        var width = $(window).width();
+        var ratio = null;
+        if (width >= 1080) {
+            if (width >= 1800) {
+                width = 1800
+            }
+            ratio = width / 1800;
+        } else {
+            ratio = 1080 / 1800;
+        }
+
+        $('html').css("font-size", 100 * ratio)
+
+        $(window).resize(function(e) {
+            width = e.srcElement.innerWidth;
+            if (width >= 1080) {
+                if (width >= 1800) {
                     width = 1800
                 }
                 ratio = width / 1800;
-            }else{
+            } else {
                 ratio = 1080 / 1800;
             }
-            
-            $('html').css("font-size",100 * ratio)
- 
-            $(window).resize(function(e){
-                width = e.srcElement.innerWidth;
-                if(width >= 1080){
-                    if(width >= 1800){
-                        width = 1800
-                    }
-                    ratio = width / 1800;
-                }else{
-                    ratio = 1080 / 1800;
-                }                
-                $('html').css("font-size",100 * ratio)                
-            })
-        })        
+            $('html').css("font-size", 100 * ratio)
+        })
+    })
     </script>
-  </head>
-  <body>
+</head>
+
+<body>
     <div id="app"></div>
     <!-- built files will be auto injected -->
     <div id="liveWrap" style="position: absolute;"></div>
@@ -71,49 +73,58 @@
     <script type="text/javascript" src="./static/videojs-contrib-hls.js"></script> -->
     <!-- flash 播放 -->
     <script type="text/javascript">
-        var currentTime, totalTime;
-        function showPlayer(src) {
-            //player
-            var flashvars = {
-                f: 'static/ckplayer/m3u8.swf',
-                a: src,
-                c: 0,
-                s: 4,
-                p: 1,
-                loaded:'loadedHandler',
-                // lv: 1,//注意，如果是直播，需设置lv:1
-            };
-            var video = [src];
-            CKobject.embed('static/ckplayer/ckplayer.swf', 'liveWrap', 'ck-video', '0', "0", false, flashvars, video);
-            
-        }
-        function loadedHandler(){
-            CKobject.getObjectById('ck-video').addListener('play','playHandler');
-            CKobject.getObjectById('ck-video').addListener('time','timeHandler');
-            CKobject.getObjectById('ck-video').addListener('totaltime','totaltimeHandler');
-        }
-        function playHandler(){
-            CKobject.getObjectById('ck-video').removeListener('play','playHandler');
-            CKobject.getObjectById('ck-video').changeVolume(50)
-            setTimeout(function(){
-                $('.loading').css('display','none')
-            },1000)
-        }
-        function setSeek(time){
-            CKobject.getObjectById('ck-video').videoSeek(time)
-        }
-        function timeHandler(time){
-            currentTime = (time)
-        }
-        function totaltimeHandler(totaltime){
-            totalTime = (totaltime)
-        }
-        function _currenttime(){
-            return currentTime;
-        }
-        function _totaltime(){
-            return (totalTime)
-        }
-    </script> 
-  </body>
+    var currentTime, totalTime;
+
+    function showPlayer(src) {
+        //player
+        var flashvars = {
+            f: 'static/ckplayer/m3u8.swf',
+            a: src,
+            c: 0,
+            s: 4,
+            p: 1,
+            loaded: 'loadedHandler',
+            // lv: 1,//注意，如果是直播，需设置lv:1
+        };
+        var video = [src];
+        CKobject.embed('static/ckplayer/ckplayer.swf', 'liveWrap', 'ck-video', '0', "0", false, flashvars, video);
+
+    }
+
+    function loadedHandler() {
+        CKobject.getObjectById('ck-video').addListener('play', 'playHandler');
+        CKobject.getObjectById('ck-video').addListener('time', 'timeHandler');
+        CKobject.getObjectById('ck-video').addListener('totaltime', 'totaltimeHandler');
+    }
+
+    function playHandler() {
+        CKobject.getObjectById('ck-video').removeListener('play', 'playHandler');
+        CKobject.getObjectById('ck-video').changeVolume(50)
+        setTimeout(function() {
+            $('.loading').css('display', 'none')
+        }, 1000)
+    }
+
+    function setSeek(time) {
+        CKobject.getObjectById('ck-video').videoSeek(time)
+    }
+
+    function timeHandler(time) {
+        currentTime = (time)
+    }
+
+    function totaltimeHandler(totaltime) {
+        totalTime = (totaltime)
+    }
+
+    function _currenttime() {
+        return currentTime;
+    }
+
+    function _totaltime() {
+        return (totalTime)
+    }
+    </script>
+</body>
+
 </html>
