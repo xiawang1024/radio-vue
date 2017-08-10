@@ -12,6 +12,7 @@
   "dependencies": {
     "axios": "^0.16.1",
     "es6-promise": "^4.1.0",
+    "hls.js": "^0.7.11",
     "video.js": "^6.2.0",
     "videojs-contrib-hls": "^5.5.3",
     "vue": "^2.3.3"

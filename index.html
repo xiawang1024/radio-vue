@@ -47,71 +47,7 @@
 
 <body>
     <div id="app"></div>
-    <!-- built files will be auto injected -->
-    <div id="liveWrap" style="position: absolute;"></div>
-    <div class="loading">
-        <img src="./imgs/loading.gif" alt="">
-        <!-- <img src="http://192.168.9.16:3000/static/app/dist/imgs/loading.gif"> -->
-        <p>我正在努力  稍等片刻...</p>
-    </div>
-    <script type="text/javascript" src="./static/ckplayer/ckplayer.js" charset="utf-8"></script>
-    <!-- h5 video -->
-    <!-- <script type="text/javascript" src="./static/video.js"></script>
-    <script type="text/javascript" src="./static/videojs-contrib-hls.js"></script> -->
-    <!-- flash 播放 -->
-    <script type="text/javascript">
-    var currentTime, totalTime;
-
-    function showPlayer(src) {
-        //player
-        var flashvars = {
-            f: 'static/ckplayer/m3u8.swf',
-            a: src,
-            c: 0,
-            s: 4,
-            p: 1,
-            loaded: 'loadedHandler',
-            // lv: 1,//注意，如果是直播，需设置lv:1
-        };
-        var video = [src];
-        CKobject.embed('static/ckplayer/ckplayer.swf', 'liveWrap', 'ck-video', '0', "0", false, flashvars, video);
-
-    }
-
-    function loadedHandler() {
-        CKobject.getObjectById('ck-video').addListener('play', 'playHandler');
-        CKobject.getObjectById('ck-video').addListener('time', 'timeHandler');
-        CKobject.getObjectById('ck-video').addListener('totaltime', 'totaltimeHandler');
-    }
-
-    function playHandler() {
-        CKobject.getObjectById('ck-video').removeListener('play', 'playHandler');
-        CKobject.getObjectById('ck-video').changeVolume(50)
-        setTimeout(function() {
-            $('.loading').css('display', 'none')
-        }, 1000)
-    }
-
-    function setSeek(time) {
-        CKobject.getObjectById('ck-video').videoSeek(time)
-    }
-
-    function timeHandler(time) {
-        currentTime = (time)
-    }
-
-    function totaltimeHandler(totaltime) {
-        totalTime = (totaltime)
-    }
-
-    function _currenttime() {
-        return currentTime;
-    }
-
-    function _totaltime() {
-        return (totalTime)
-    }
-    </script>
+    
 </body>
 
 </html>

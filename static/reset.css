@@ -99,3 +99,6 @@ scrollbarbutton {
   line-height: 60px;
   border-radius: 8px;
 }
+html,body{
+  min-width: 1400px;
+}
