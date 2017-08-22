@@ -37,11 +37,11 @@
     </div>
     <div class="g-play">
         <span class="m-time playWrap" @click="playOrPause">
-            <i v-if="isPlay" class="iconBtn iconPlay" title="播放"></i>
-            <i v-else class="iconBtn iconPaused" title="暂停"></i>
+            <i v-if="isPlay" class="iconBtn iconPlay" title="播放/暂停"></i>
+            <i v-else class="iconBtn iconPaused" title="播放/暂停"></i>
         </span>
         <div class="progress" v-if="!isLiveBtn">
-            <vue-slider @drag-end="setPlayTime" class="vo-slide" v-model="progressoptions.value" v-bind="progressoptions"></vue-slider>
+            <vue-slider @drag-end="setPlayTime" class="vo-slide" v-model="progressoptions.value" v-bind="progressoptions" ref="progress"></vue-slider>
             <div >
               <span class="currentTime">{{format(currentTime)}}</span>
               <span class="totalTime">{{format(totalTime)}}</span>
@@ -158,6 +158,7 @@ export default {
         nameSrc:'',
         dateSrc:'',
         liveIndex:-1,
+        liveStream:'',//直播流
         isLiveBtn:true, //是否直播
         hnItemList:[], //河南电台列表
         wlItemList:[], //网络电台列表
@@ -172,9 +173,9 @@ export default {
         totalTime:0,//总播放时间
         options:{
             value: 80,// 值
-            width: 4,// 组件宽度
-            height: 100,// 组件高度
-            direction: "vertical",// 组件方向
+            width: 80,// 组件宽度
+            height: 4,// 组件高度
+            direction: "horizontal",// 组件方向
             dotSize: 14,// 滑块大小
             eventType: "auto",// 事件类型
             min: 0,// 最小值
@@ -185,7 +186,7 @@ export default {
             realTime: false,// 是否实时计算组件布局
             tooltip: "always",// 是否显示工具提示
             clickable: true,// 是否可点击的
-            tooltipDir: "right",// 工具提示方向
+            tooltipDir: "top",// 工具提示方向
             piecewise: false,// 是否显示分段样式
             lazy: false,// 是否在拖拽结束后同步值
             reverse: false,// 是否反向组件
@@ -247,6 +248,9 @@ export default {
     }
   },
   created(){
+    this.cid = this.getQueryString('cid') || 1
+    this.cid = parseInt(this.cid)
+    this.cid = (this.cid > 11 || this.cid < 0) ? 1 : this.cid;
     getClassItem(1).then((res) => {
         let data = res.data;
         this.hnItemList = data;
@@ -262,15 +266,16 @@ export default {
         this.dsItemList = data;
         this.$nextTick(function(){})
     })
-    clickItem(1,this._timeToStamp(this._getToDay())).then((res) => {
+    clickItem(this.cid,this._timeToStamp(this._getToDay())).then((res) => {
         let data = res.data;
         this.itemList = data.programs;
         this.imgSrc = 'http://program.hndt.com' + data.image;
         this.timeSrc = data.time;
         this.nameSrc = data.live;
         this.audioSrc = data.streams[0];
-        this._playHlsSrc(this.audioSrc)
+        this.liveStream = data.streams[0];
         setTimeout(() => {
+          this._playHlsSrc(this.liveStream)
           this.isPlayIndex()
         },20)
         this.dateSrc =(new Date()).getTime();
@@ -360,6 +365,12 @@ export default {
     },
   },
   methods:{
+    getQueryString(name) {
+        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+        var r = window.location.search.substr(1).match(reg);
+        if (r != null) return unescape(r[2]);
+        return null;
+    },
     slideList(index) {
         this.showBtn.splice(index,1,!this.showBtn[index])
     },
@@ -437,8 +448,8 @@ export default {
             }else{
                 this.nameSrc = data.live;
             }
-            this.audioSrc = data.streams[0];
-            this._playHlsSrc(this.audioSrc)
+            this.liveStream = data.streams[0];
+            this._playHlsSrc(this.liveStream)
             setTimeout(() => {
               this.top = 0;
               this.isPlayIndex()
@@ -489,14 +500,21 @@ export default {
     selectItem(index,playUrl,title,beginTime,endTime){
         this.activeItemIndex = index;
         this.top = index * 40;
-        // console.log(playUrl)
         $('.listwrap').scrollTop(this.top - 120);
         if(this.liveIndex == index) {
           this.isLiveBtn = true;
-          this._playHlsSrc(this.audioSrc)
+          this.options.value = 80;
+          this.audioSrc = playUrl[0];
+          this.nameSrc = title;
+          this.dateSrc = this.stamp * 1000;
+          this.timeSrc = this.stampTotime(beginTime) + '-' + this.stampTotime(endTime);
+          setTimeout(() => {
+            this._playHlsSrc(this.liveStream)
+          },20)
         }else{
           this.isLiveBtn = false;
           if(playUrl && playUrl.length > 0){
+              this.progressoptions.value = 0;
               this.options.value = 80;
               this.audioSrc = playUrl[0];
               this.nameSrc = title;
@@ -547,16 +565,26 @@ export default {
         }
         return num
     },
+    //判断是否是m3u8,地市台换用蜻蜓直播流mp3
+    _isM3u8(stream){
+        let patt = /m3u8$/;
+        return patt.test(stream);
+    },
     _playHlsSrc(stream){
-      if(Hls.isSupported()) {
-        this.hls = new Hls();
-        this.hls.loadSource(stream);
-        this.hls.attachMedia(this.audio);
-        this.hls.on(Hls.Events.MANIFEST_PARSED,function() {
-          this.audio.play();
-        });
-      }
-		},
+        if(this._isM3u8(stream)){
+            if (Hls.isSupported()) {
+                this.hls = new Hls();
+                this.hls.loadSource(stream);
+                this.hls.attachMedia(this.audio);
+                this.hls.on(Hls.Events.MANIFEST_PARSED, () => {
+                    this.audio.play();
+                    this.isPlay = true
+                });
+            }
+        }else{
+            this.audio.setAttribute('src',stream)
+        }
+    },
     watchPlayPercent() {
     	this.audio.addEventListener('timeupdate',(e) => {
     		const currentTime = e.target.currentTime;
@@ -620,7 +648,7 @@ body
     .g-logo
         position: absolute
         z-index: 5
-        right 0
+        right 20px
         top 40px
     .g-bg-color
         position: absolute
@@ -859,22 +887,22 @@ body
                 z-index: 10
                 top 0
                 bottom 0
-                left 6.22rem
-                height 6.22rem
+                left 8rem
+                height 7rem
                 margin auto 0
                 .disc-bg
                     position: absolute
-                    left 1.06rem
+                    left 1.02rem
                     top 1rem
                     z-index: -1
-                    width 6.7rem
-                    height 6.7rem
+                    width 7rem
+                    height 7rem
                     background url('../imgs/shadow.png') center center no-repeat
                     background-size cover
                 .disc-wrap
-                    width 6.22rem
-                    height 6.22rem
-                    line-height 6.22rem
+                    width 6.5rem
+                    height 6.5rem
+                    line-height 6.5rem
                     text-align center
                     background url('../imgs/disc.png') center center no-repeat
                     background-size cover
@@ -942,8 +970,8 @@ body
             cursor: pointer
             .vo-slide
                 position: absolute
-                bottom 50px
-                left 24px
+                bottom 27px
+                left 50px
         .progress
             float left
             width 300px
