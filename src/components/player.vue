@@ -34,6 +34,15 @@
               <li class="list-item" v-for="item of dsItemList" @click="isActive(item.cid)" :class="{isActive: cid == item.cid ? true : false}">{{item.name}}</li>
           </ul>
       </div>
+      <div class="m-list">
+          <div class="list-name" @click="slideList(3)">
+              央广电台
+              <i :class="showBtn[3] ? 'icon-down' : 'icon-right'"></i>
+          </div>
+          <ul class="list-box" v-show="showBtn[3]">
+              <li class="list-item" v-for="item of ygItemList" @click="isActive(item.cid)" :class="{isActive: cid == item.cid ? true : false}">{{item.name}}</li>
+          </ul>
+      </div>
     </div>
     <div class="g-play">
         <span class="m-time playWrap" @click="playOrPause">
@@ -163,6 +172,7 @@ export default {
         hnItemList:[], //河南电台列表
         wlItemList:[], //网络电台列表
         dsItemList:[], //地市台列表
+        ygItemList:[],//央广电台
         itemList:[], //节目列表
         cid:1, //河南电台新闻广播cid
         player:null,
@@ -265,6 +275,11 @@ export default {
         let data = res.data;
         this.dsItemList = data;
         this.$nextTick(function(){})
+    })
+    getClassItem(5).then((res) => {
+        let data = res.data;
+        this.ygItemList = data;
+        this.$nextTick(function() { })
     })
     clickItem(this.cid,this._timeToStamp(this._getToDay())).then((res) => {
         let data = res.data;
@@ -454,6 +469,9 @@ export default {
               this.top = 0;
               this.isPlayIndex()
             },20)
+            this.year= new Date().getFullYear() + '年'
+            this.month= new Date().getMonth() + 1 + '月'
+            this.day= new Date().getDate() + '日'
         })
     },
     //时间转时间戳
