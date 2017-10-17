@@ -34,7 +34,7 @@
               <li class="list-item" v-for="item of dsItemList" @click="isActive(item.cid)" :class="{isActive: cid == item.cid ? true : false}">{{item.name}}</li>
           </ul>
       </div>
-      <div class="m-list">
+      <!-- <div class="m-list">
           <div class="list-name" @click="slideList(3)">
               央广电台
               <i :class="showBtn[3] ? 'icon-down' : 'icon-right'"></i>
@@ -42,7 +42,7 @@
           <ul class="list-box" v-show="showBtn[3]">
               <li class="list-item" v-for="item of ygItemList" @click="isActive(item.cid)" :class="{isActive: cid == item.cid ? true : false}">{{item.name}}</li>
           </ul>
-      </div>
+      </div> -->
     </div>
     <div class="g-play">
         <span class="m-time playWrap" @click="playOrPause">
@@ -234,7 +234,7 @@ export default {
             disabled: false,// 是否不可用
             show: true,// 是否显示组件
             realTime: false,// 是否实时计算组件布局
-            tooltip: "no",// 是否显示工具提示
+            tooltip: "yes",// 是否显示工具提示
             clickable: true,// 是否可点击的
             tooltipDir: "top",// 工具提示方向
             piecewise: false,// 是否显示分段样式
@@ -321,6 +321,14 @@ export default {
     options:{
         handler:function(){
             this.audio.volume = this.options.value/100
+        },
+        deep: true
+    },
+    progressoptions: {
+        handler: function() {
+            // this.audio.volume = this.options.value / 100
+            let currentTime = this.audio.duration * (this.progressoptions.value / 100)
+            this.audio.currentTime = currentTime
         },
         deep: true
     },
@@ -468,6 +476,7 @@ export default {
             setTimeout(() => {
               this.top = 0;
               this.isPlayIndex()
+              this.isLiveBtn = true;
             },20)
             this.year= new Date().getFullYear() + '年'
             this.month= new Date().getMonth() + 1 + '月'
@@ -519,7 +528,7 @@ export default {
         this.activeItemIndex = index;
         this.top = index * 40;
         $('.listwrap').scrollTop(this.top - 120);
-        if(this.liveIndex == index) {
+        if(this.liveIndex == index && this._isToday()) {
           this.isLiveBtn = true;
           this.options.value = 80;
           this.audioSrc = playUrl[0];
@@ -547,6 +556,17 @@ export default {
           }
         }
 
+    },
+    //判断是否是今天
+    _isToday () {
+        let year = new Date().getFullYear() + '年'
+        let month = new Date().getMonth() + 1 + '月'
+        let day = new Date().getDate() + '日'
+        if(this.year === year && this.month === month && this.day === day){
+            return true
+        }else{
+            return false
+        }
     },
     //设置背景色
     setBgColor(color) {
@@ -607,12 +627,12 @@ export default {
     	this.audio.addEventListener('timeupdate',(e) => {
     		const currentTime = e.target.currentTime;
     		const duration = e.target.duration
-        setTimeout(() => {
-          this.currentTime = 0;
-          this.currentTime = currentTime
-      		this.totalTime = duration
-      		this.percent = currentTime / duration
-        },20)
+            setTimeout(() => {
+            this.currentTime = 0;
+            this.currentTime = currentTime
+                this.totalTime = duration
+                this.percent = currentTime / duration
+            },20)
 
     	})
     },
