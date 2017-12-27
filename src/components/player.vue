@@ -95,7 +95,7 @@
                             </span>
                             <span class="list-title">{{item.title}}</span>
                             <span class="play-icon" v-show="item.playUrl && item.playUrl.length > 0"></span><!-- v-show="item.playUrl && item.playUrl.length > 0" -->
-                            <span class="live-icon" v-show="liveIndex == index">live</span>
+                            <span class="live-icon" v-show="isToday && liveIndex == index">live</span>
                         </li>
                     </ul>
                 </div>
@@ -140,8 +140,8 @@ const bgColors = [
     {color:"#e7b9df"},
 ]
 const years = [
+    {id:2018},
     {id:2017},
-    {id:2016},
 ]
 export default {
   name: 'player',
@@ -386,6 +386,9 @@ export default {
         // this.dateSrc = datestamp * 1000;
         return datestamp;
     },
+    isToday() {
+        return this._isToday()
+    }
   },
   methods:{
     getQueryString(name) {
@@ -539,8 +542,9 @@ export default {
             this._playHlsSrc(this.liveStream)
           },20)
         }else{
-          this.isLiveBtn = false;
+          
           if(playUrl && playUrl.length > 0){
+              this.isLiveBtn = false;
               this.progressoptions.value = 0;
               this.options.value = 80;
               this.audioSrc = playUrl[0];
@@ -551,11 +555,8 @@ export default {
                 this._playHlsSrc(this.audioSrc)
               },20)
 
-          }else{
-              return
           }
         }
-
     },
     //判断是否是今天
     _isToday () {
