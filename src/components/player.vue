@@ -112,7 +112,7 @@
         </div>
         <div class="m-disc">
             <div class="disc-bg"></div>
-            <div class="disc-wrap" :class="isPlay ? 'isPlay' : ''">
+            <div class="disc-wrap" :class="isPlay ? '' : 'isPause'">
                 <img :src="imgSrc" alt="" class="disc-img">
             </div>
             <div class="disc-arm" :class="!isPlay ? 'isPaused' : ''"></div>
@@ -945,11 +945,9 @@ body
                     text-align center
                     background url('../imgs/disc.png') center center no-repeat
                     background-size cover
-                    &.isPlay
-                        -webkit-animation rotate 12s linear infinite
-                        -moz-animation rotate 12s linear infinite
-                        -o-animation rotate 12s linear infinite
-                        animation rotate 12s linear infinite
+                    animation rotate 12s linear infinite
+                    &.isPause                        
+                        animation-play-state paused
                     .disc-img
                         vertical-align middle
                         width 2.35rem
