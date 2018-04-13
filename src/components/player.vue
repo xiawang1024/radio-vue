@@ -94,6 +94,7 @@
                                 {{item.beginTime |formdata}} - {{item.endTime |formdata}}
                             </span>
                             <span class="list-title">{{item.title}}</span>
+                            <a class="icon-download" v-show="item.downloadUrl && item.downloadUrl.length > 0" :href="item.downloadUrl[0]" :download="item.title"></a>
                             <span class="play-icon" v-show="item.playUrl && item.playUrl.length > 0"></span><!-- v-show="item.playUrl && item.playUrl.length > 0" -->
                             <span class="live-icon" v-show="isToday && liveIndex == index">live</span>
                         </li>
@@ -391,6 +392,10 @@ export default {
     }
   },
   methods:{
+      downLoad(url) {
+        //   alert(url)
+          window.open(url)
+      },
     getQueryString(name) {
         var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
         var r = window.location.search.substr(1).match(reg);
@@ -846,7 +851,7 @@ body
                                 width 70px
                 .m-itemlist
                     position: relative
-                    width 395px
+                    width 400px
                     height 320px
                     margin-top 40px
                     .item-hd
@@ -899,7 +904,7 @@ body
                                     text-align center
                                 .list-title
                                     display inline-block
-                                    width 225px
+                                    width 200px
                                     white-space nowrap
                                     overflow hidden
                                     text-overflow: ellipsis
@@ -914,6 +919,15 @@ body
                                     margin-top 8px
                                     vertical-align -8px
                                     background url('../imgs/play.png') center center no-repeat
+                                    background-size cover
+                                .icon-download
+                                    display inline-block
+                                    margin-right 4px
+                                    width 25px
+                                    height 25px
+                                    margin-top 8px
+                                    vertical-align -8px
+                                    background url('../imgs/icon-download.png') center center no-repeat
                                     background-size cover
                                 .live-icon
                                     // border 1px solid #0080cc
