@@ -2,52 +2,53 @@
 <html style="font-size:100px">
 
 <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
-    <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="renderer" content="webkit">
-    <link rel="shortcut icon" href="./static/favicon.ico" type="image/x-icon">
-    <title>河南广播网</title>
-    <meta name="keywords" content="河南广播电台">
-    <meta name="description" content="河南广播电台">
-    <link rel="stylesheet" type="text/css" href="./static/reset.css">
-    <link rel="stylesheet" type="text/css" href="./static/font/style.css">
-    <script type="text/javascript" src=./static/zepto.js></script>
-    <script type="text/javascript">
-    $(function() {
-        // console.log($(window).width())
-        var width = $(window).width();
-        var ratio = null;
-        if (width >= 1080) {
-            if (width >= 1800) {
-                width = 1800
-            }
-            ratio = width / 1800;
-        } else {
-            ratio = 1080 / 1800;
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="renderer" content="webkit">
+  <link rel="shortcut icon" href="./static/favicon.ico" type="image/x-icon">
+  <title>河南广播网</title>
+  <meta name="keywords" content="河南广播电台">
+  <meta name="description" content="河南广播电台">
+  <link rel="stylesheet" type="text/css" href="./static/reset.css">
+  <link rel="stylesheet" type="text/css" href="./static/font/style.css">
+  <script type="text/javascript" src=./static/zepto.js></script>
+  <script type="text/javascript">
+    $(function () {
+      // console.log($(window).width())
+      var width = $(window).width();
+      var ratio = null;
+      if (width >= 1080) {
+        if (width >= 1800) {
+          width = 1800
         }
+        ratio = width / 1800;
+      } else {
+        ratio = 1080 / 1800;
+      }
 
+      $('html').css("font-size", 100 * ratio)
+
+      $(window).resize(function (e) {
+        width = e.srcElement.innerWidth;
+        if (width >= 1080) {
+          if (width >= 1800) {
+            width = 1800
+          }
+          ratio = width / 1800;
+        } else {
+          ratio = 1080 / 1800;
+        }
         $('html').css("font-size", 100 * ratio)
-
-        $(window).resize(function(e) {
-            width = e.srcElement.innerWidth;
-            if (width >= 1080) {
-                if (width >= 1800) {
-                    width = 1800
-                }
-                ratio = width / 1800;
-            } else {
-                ratio = 1080 / 1800;
-            }
-            $('html').css("font-size", 100 * ratio)
-        })
+      })
     })
-    </script>
+
+  </script>
 </head>
 
 <body>
-    <div id="app"></div>
-    
+  <div id="app"></div>
+  <script type="text/javascript" src="http://www.hndt.com/global/js/baidu.js"></script>
 </body>
 
 </html>
