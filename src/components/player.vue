@@ -131,7 +131,7 @@
 import { getLiveItem, getClassItem, getChannelItem, clickItem } from '@/api.js'
 import voice from './voice.vue'
 import vueSlider from 'vue-slider-component';
-import Hls from 'hls'
+import Hls from 'hls.js'
 // 新背景颜色
 const bgColors = [
     {color:"#f8f8f8"},
@@ -141,6 +141,7 @@ const bgColors = [
     {color:"#e7b9df"},
 ]
 const years = [
+    {id:2019},
     {id:2018},
     {id:2017},
 ]
